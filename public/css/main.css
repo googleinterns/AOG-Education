@@ -1,0 +1,79 @@
+html {
+  display: flex;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex: 1;
+  margin: 0;
+  background-color: #F5F5F5;
+}
+
+.view {
+  position: relative;
+  flex: 1;
+}
+
+canvas {
+  display: block;
+  background-color: white;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.debug {
+  display: flex;
+  flex-direction: column;
+
+  /* Uncomment below to disable the debug overlay */
+  /* display: none !important; */
+
+  width: 200px;
+
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  bottom: 8px;
+}
+
+.stats {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logs {
+  display: block;
+  flex: 1;
+  opacity: 0.8;
+  overflow-y: scroll;
+  text-align: right;
+
+  font-size: 12px;
+}
+
+.logs > p {
+  display: inline-block;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  margin: 0px;
+  margin-top: 1px;
+  background: black;
+  max-width: 100%;
+
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: right;
+  overflow-wrap: break-word;
+}
+
+.logs > p.error {
+  color: red;
+}
