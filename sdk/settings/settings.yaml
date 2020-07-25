@@ -1,3 +1,14 @@
+category: GAMES_AND_TRIVIA
 defaultLocale: en
+localizedSettings:
+  developerEmail:
+  developerName:
+  displayName: AOG Education
+  fullDescription:
+  privacyPolicyUrl:
+  pronunciation: AOG Education
+  shortDescription:
+  smallLogoImage:
+  termsOfServiceUrl:
 projectId: step-capstone
 usesInteractiveCanvas: true
