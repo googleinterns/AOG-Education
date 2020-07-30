@@ -11,10 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-handlers:
-- name: welcome
-- name: aog_instructions
-- name: aog_main_menu_selection
-- name: fallback
-httpsEndpoint:
-  baseUrl: 'https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment'
+parameters:
+- name: selection
+  type:
+    name: aog_main_menu_options
+trainingPhrases:
+- go to ($selection 'geography' auto=true)
+- open ($selection 'reading' auto=true)
+- select ($selection 'language' auto=true)
+- start ($selection 'geography' auto=true)
+- play ($selection 'reading' auto=true)
+- ($selection 'language' auto=true)

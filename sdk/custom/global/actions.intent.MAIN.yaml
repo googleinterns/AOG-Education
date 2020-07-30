@@ -1,8 +1,3 @@
 handler:
-  staticPrompt:
-    candidates:
-    - promptResponse:
-        firstSimple:
-          variants:
-          - speech: Start building your action by defining main invocation.
-transitionToScene: actions.scene.END_CONVERSATION
+  webhookHandler: welcome
+transitionToScene: aog_main_menu

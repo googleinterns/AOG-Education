@@ -18,10 +18,13 @@ const { conversation, Canvas } = require("@assistant/conversation");
 const functions = require("firebase-functions");
 const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 
-const INSTRUCTIONS =
-    "Hello user, This is AOG Education.";
+const INSTRUCTIONS = "Hello user, This is AOG Education.";
 
 const app = conversation({ debug: true });
+
+/**
+ * AOG Education Global Handlers
+ */
 
 app.handle("welcome", (conv) => {
     if (!conv.device.capabilities.includes("INTERACTIVE_CANVAS")) {
@@ -40,13 +43,33 @@ app.handle("welcome", (conv) => {
 });
 
 app.handle("fallback", (conv) => {
-    conv.add(`I don't understand. You can change my color or pause spinning.`);
+    conv.add(`I don't understand. Ask for help to get assistance.`);
     conv.add(new Canvas());
 });
 
-app.handle("instructions", (conv) => {
+app.handle("aog_instructions", (conv) => {
     conv.add(INSTRUCTIONS);
     conv.add(new Canvas());
 });
+
+app.handle("aog_main_menu_selection", (conv) => {
+    const selection = conv.intent.params.selection
+        ? conv.intent.params.selection.resolved
+        : null;
+    console.log(selection);
+    conv.add(`Ok, starting ${selection}.`);
+    conv.add(
+        new Canvas({
+            data: {
+                command: "AOG_MAIN_MENU_SELECTION",
+                selection: selection,
+            },
+        })
+    );
+});
+
+/**
+ * GEOGRAPHY SECTION
+ */
 
 exports.ActionsOnGoogleFulfillment = functions.https.onRequest(app);

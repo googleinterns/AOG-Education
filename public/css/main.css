@@ -1,79 +1,26 @@
-html {
-  display: flex;
-  height: 100%;
-}
-
-body {
-  display: flex;
-  flex: 1;
-  margin: 0;
-  background-color: #F5F5F5;
-}
-
-.view {
-  position: relative;
-  flex: 1;
+html, body {
+    height: 100%;
 }
 
 canvas {
-  display: block;
-  background-color: white;
+    position: fixed;
+    background-color: #fff;
 }
 
-::-webkit-scrollbar {
-  width: 0px;
-  background: transparent;
+#game {
+    width: 100%;
+    height: 100%;
 }
 
-::-webkit-scrollbar-thumb {
-  background: transparent;
+/* Header Section with navbar and image */
+header {
+    height: 100vh;
+    background-size: cover;
+    background-position: left;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
-.debug {
-  display: flex;
-  flex-direction: column;
-
-  /* Uncomment below to disable the debug overlay */
-  /* display: none !important; */
-
-  width: 200px;
-
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  bottom: 8px;
-}
-
-.stats {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.logs {
-  display: block;
-  flex: 1;
-  opacity: 0.8;
-  overflow-y: scroll;
-  text-align: right;
-
-  font-size: 12px;
-}
-
-.logs > p {
-  display: inline-block;
-  padding-top: 1px;
-  padding-bottom: 1px;
-  margin: 0px;
-  margin-top: 1px;
-  background: black;
-  max-width: 100%;
-
-  font-family: Arial, sans-serif;
-  color: white;
-  text-align: right;
-  overflow-wrap: break-word;
-}
-
-.logs > p.error {
-  color: red;
+#main-menu {
+    background-image: url("../img/global/AOG\ Education.png");
 }

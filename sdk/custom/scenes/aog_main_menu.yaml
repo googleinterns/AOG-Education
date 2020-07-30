@@ -11,10 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-handlers:
-- name: welcome
-- name: aog_instructions
-- name: aog_main_menu_selection
-- name: fallback
-httpsEndpoint:
-  baseUrl: 'https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment'
+intentEvents:
+- handler:
+    webhookHandler: aog_instructions
+  intent: aog_instructions
+  transitionToScene: aog_main_menu
+- handler:
+    webhookHandler: aog_main_menu_selection
+  intent: aog_main_menu_selection
+  transitionToScene: aog_main_menu
