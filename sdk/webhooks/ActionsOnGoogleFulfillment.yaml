@@ -23,5 +23,3 @@ handlers:
 - name: geo_checkAnswer
 inlineCloudFunction:
   executeFunction: ActionsOnGoogleFulfillment
-# httpsEndpoint:
-#   baseUrl: 'https://us-central1-test-project-e40c9.cloudfunctions.net/cf-osS6i5-_MTWRmFSj9L5KpA-name'

@@ -10,6 +10,5 @@ localizedSettings:
   shortDescription:
   smallLogoImage:
   termsOfServiceUrl:
-projectId: test-project-e40c9
-# projectId: step-capstone
+projectId: step-capstone
 usesInteractiveCanvas: true

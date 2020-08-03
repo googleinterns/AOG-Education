@@ -37,8 +37,7 @@ app.handle("welcome", (conv) => {
     );
     conv.add(
         new Canvas({
-            url: "https://test-project-e40c9.web.app",
-            // REPLACE with url: `https://step-capstone.web.app`,
+            url: "https://step-capstone.web.app",
         })
     );
 });
@@ -69,7 +68,7 @@ app.handle("aog_main_menu_selection", (conv) => {
     );
 
     if (selection == "geography") {
-        conv.scene.next.name = "geo_scene_geo_category";
+        conv.scene.next.name = "geo_scene_category";
     }
 });
 
