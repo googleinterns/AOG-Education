@@ -1,0 +1,8 @@
+onEnter:
+  webhookHandler: geo_askWorldCapitalQuestion
+
+intentEvents:
+- handler:
+    webhookHandler: geo_checkAnswer
+  intent: geo_intent_answer
+  transitionToScene: geo_scene_worldCapitalQuestion

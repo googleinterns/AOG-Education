@@ -1,0 +1,22 @@
+onEnter:
+  staticPrompt:
+    candidates:
+    - promptResponse:
+        firstSimple:
+          variants:
+          - speech: Choose a category - US Capitals, World Capitals, US States, or Countries.
+        suggestions:
+        - title: "U.S. Capitals"
+        - title: "World Capitals"
+        - title: "U.S. States"
+        - title: "Countries"
+
+intentEvents:
+- intent: geo_intent_usCapitalCat
+  transitionToScene: geo_scene_usCapitalQuestion
+- intent: geo_intent_worldCapitalCat
+  transitionToScene: geo_scene_worldCapitalQuestion
+- intent: geo_intent_stateCat
+  transitionToScene: geo_scene_stateQuestion
+- intent: geo_intent_countryCat
+  transitionToScene: geo_scene_countryQuestion

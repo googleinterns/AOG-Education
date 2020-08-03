@@ -1,0 +1,29 @@
+{
+  "name": "test-project-e40c9",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "10"
+  },
+  "dependencies": {
+    "@assistant/conversation": "^3.0.0",
+    "actions-on-google": "^2.12.0",
+    "firebase-admin": "~8.12.1",
+    "firebase-functions": "^3.6.2"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.js\"",
+    "lint:fix": "eslint --fix \"**/*.js\"",
+    "test": "npm run lint",
+    "serve": "firebase serve",
+    "deploy": "firebase deploy"
+  },
+  "devDependencies": {
+    "eslint": "^5.2.0",
+    "eslint-config-google": "^0.9.1"
+  },
+  "author": "",
+  "license": "ISC"
+}
