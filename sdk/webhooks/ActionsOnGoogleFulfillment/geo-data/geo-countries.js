@@ -5,7 +5,7 @@ module.exports.countries = {
     3: ['Thailand', 'Bangkok', '035'],
     4: ['China', 'Beijing', '142'],
     5: ['Germany', 'Berlin', '150'],
-    6: ['Colombia', 'Bogotá', '019'],
+    6: ['Colombia', 'Bogotá', '005'],
     7: ['Brazil', 'Brasilia', '005'],
     8: ['Egypt', 'Cairo', '002'],
     9: ['Bangladesh', 'Dhaka', '034'],

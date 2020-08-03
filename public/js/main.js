@@ -21,3 +21,8 @@ window.addEventListener("load", () => {
     // Call setCallbacks to register Interactive Canvas
     window.scene.action.setCallbacks();
 });
+
+// Get the header height of the device and set the top body padding accordingly
+window.interactiveCanvas.getHeaderHeightPx().then((headerHeight) => {
+    document.body.style.paddingTop = `${headerHeight}px`;
+});
