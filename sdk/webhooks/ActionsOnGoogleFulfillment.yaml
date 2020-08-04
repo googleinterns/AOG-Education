@@ -16,10 +16,12 @@ handlers:
 - name: aog_instructions
 - name: aog_main_menu_selection
 - name: fallback
+- name: geo_setup
 - name: geo_askUSCapitalQuestion
 - name: geo_askWorldCapitalQuestion
 - name: geo_askStateQuestion
 - name: geo_askCountryQuestion
 - name: geo_checkAnswer
+- name: geo_viewResults
 inlineCloudFunction:
   executeFunction: ActionsOnGoogleFulfillment

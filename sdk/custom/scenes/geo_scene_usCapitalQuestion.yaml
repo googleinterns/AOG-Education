@@ -1,5 +1,9 @@
-onEnter:
-  webhookHandler: geo_askUSCapitalQuestion
+conditionalEvents:
+- condition: session.params.geo_numQuestionsLeft == 0
+  transitionToScene: geo_scene_results
+- condition: session.params.geo_numQuestionsLeft != 0
+  handler:
+    webhookHandler: geo_askUSCapitalQuestion
 
 intentEvents:
 - handler:

@@ -10,6 +10,7 @@ onEnter:
         - title: "World Capitals"
         - title: "U.S. States"
         - title: "Countries"
+  webhookHandler: geo_setup
 
 intentEvents:
 - intent: geo_intent_usCapitalCat

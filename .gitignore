@@ -6,3 +6,4 @@ yarn.lock
 .firebase
 *.log
 .vscode
+./public/js/config.js

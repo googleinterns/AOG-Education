@@ -80,89 +80,94 @@ app.handle("aog_main_menu_selection", (conv) => {
 const geo_statesFile = require("./geo-states");
 const geo_stateCoordsFile = require("./geo-stateCoords");
 const geo_countriesFile = require("./geo-countries");
-const geo_states = geo_statesFile.states;
-const geo_stateCoords = geo_stateCoordsFile.stateCoords;
-const geo_countries = geo_countriesFile.countries;
-
-const geo_categories = {
-  USCAPITALS: "us_capitals",
-  WORLDCAPITALS: "world_capitals",
-  STATES: "states",
-  COUNTRIES: "countries"
-};
-
-let geo_stateInd, geo_state, geo_countryInd, geo_country;
-let geo_usCapital, geo_worldCapital;
-let geo_category;
+let geo_states, geo_stateCoords, geo_countries;
 
 // Randomly generate a new state question.
-function getNewStateQuestion() {
-    geo_stateInd = parseInt(Math.random()*Object.keys(geo_states).length);
-    geo_state = geo_states[geo_stateInd][0];
-    geo_usCapital = geo_states[geo_stateInd][1];
+function getNewStateQuestion(conv) {
+    conv.session.params.geo_stateInd = parseInt(Math.random() * Object.keys(geo_states).length);
+    conv.session.params.geo_state = geo_states[conv.session.params.geo_stateInd][0];
+    conv.session.params.geo_usCapital = geo_states[conv.session.params.geo_stateInd][1];
+    conv.session.params.geo_numQuestionsLeft--;
 }
 
 // Randomly generate a new country question.
-function getNewCountryQuestion() {
-    geo_countryInd = parseInt(Math.random()*Object.keys(geo_countries).length);
-    geo_country = geo_countries[geo_countryInd][0];
-    geo_worldCapital = geo_countries[geo_countryInd][1];
+function getNewCountryQuestion(conv) {
+    conv.session.params.geo_countryInd = parseInt(Math.random() * Object.keys(geo_countries).length);
+    conv.session.params.geo_country = geo_countries[conv.session.params.geo_countryInd][0];
+    conv.session.params.geo_worldCapital = geo_countries[conv.session.params.geo_countryInd][1];
+    conv.session.params.geo_numQuestionsLeft--;
 }
 
+app.handle("geo_setup", (conv) => {
+    geo_states = geo_statesFile.states;
+    geo_stateCoords = geo_stateCoordsFile.stateCoords;
+    geo_countries = geo_countriesFile.countries;
+    conv.session.params.geo_numQuestionsLeft = 10;
+    conv.session.params.geo_correct = 0;
+    conv.session.params.geo_incorrect = 0;
+});
+
 app.handle("geo_askUSCapitalQuestion", (conv) => {
-    geo_category = geo_categories.USCAPITALS;
-    getNewStateQuestion();
-    conv.add(`What is the capital of ${geo_state}?`);
+    conv.session.params.geo_category = "USCAPITALS";
+    getNewStateQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_state}?`);
 });
 
 app.handle("geo_askWorldCapitalQuestion", (conv) => {
-    geo_category = geo_categories.WORLDCAPITALS;
-    getNewCountryQuestion();
-    conv.add(`What is the capital of ${geo_country}?`);
+    conv.session.params.geo_category = "WORLDCAPITALS";
+    getNewCountryQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_country}?`);
 });
 
 app.handle("geo_askStateQuestion", (conv) => {
-    geo_category = geo_categories.STATES;
-    getNewStateQuestion();
+    conv.session.params.geo_category = "STATES";
+    getNewStateQuestion(conv);
     conv.add("What is the state pictured?");
     conv.add(new Canvas({
         data: {
             command: "LOAD_STATE_MAP",
-            coords: geo_stateCoords[geo_state]
+            coords: geo_stateCoords[conv.session.params.geo_state]
         }
     }));
 });
 
 app.handle("geo_askCountryQuestion", (conv) => {
-    geo_category = geo_categories.COUNTRIES;
-    getNewCountryQuestion();
+    conv.session.params.geo_category = "COUNTRIES";
+    getNewCountryQuestion(conv);
     conv.add("What is the country pictured?");
     conv.add(new Canvas({
         data: {
             command: "LOAD_COUNTRY_MAP",
-            country: geo_country,
-            region: geo_countries[geo_countryInd][2]
+            country: conv.session.params.geo_country,
+            region: geo_countries[conv.session.params.geo_countryInd][2]
         }
     }));
 });
 
+app.handle("geo_viewResults", (conv) => {
+    conv.add(`You got ${conv.session.params.geo_correct} questions correct and ${conv.session.params.geo_incorrect} questions incorrect.`);
+});
+
 app.handle("geo_checkAnswer", (conv) => {
     let correctAnswer;
-    if (geo_category == geo_categories.USCAPITALS) {
-        correctAnswer = geo_usCapital;
-    } else if (geo_category == geo_categories.STATES) {
-        correctAnswer = geo_state;
-    } else if (geo_category == geo_categories.COUNTRIES) {
-        correctAnswer = geo_country;
-    } else if (geo_category == geo_categories.WORLDCAPITALS) {
-        correctAnswer = geo_worldCapital;
+    if (conv.session.params.geo_category == "USCAPITALS") {
+        correctAnswer = conv.session.params.geo_usCapital;
+    } else if (conv.session.params.geo_category == "STATES") {
+        correctAnswer = conv.session.params.geo_state;
+    } else if (conv.session.params.geo_category == "COUNTRIES") {
+        correctAnswer = conv.session.params.geo_country;
+    } else if (conv.session.params.geo_category == "WORLDCAPITALS") {
+        correctAnswer = conv.session.params.geo_worldCapital;
     }
 
     if (conv.intent.params.answer && conv.intent.params.answer.resolved.includes(correctAnswer) ||
-            geo_category == geo_categories.USCAPITALS && geo_state == "Alaska" &&
+            conv.session.params.geo_category == "USCAPITALS" &&
+            conv.session.params.geo_state == "Alaska" &&
             conv.intent.params.answer.resolved.includes("Juno")) {
+        conv.session.params.geo_correct++;
         conv.add(`${correctAnswer} is correct!`);
     } else {
+        conv.session.params.geo_incorrect++;
         conv.add(`Sorry, that's incorrect. The correct answer is ${correctAnswer}.`);
     }
 });
