@@ -20,11 +20,23 @@ export class Action {
                     this.scene.openReading();
                 }
             },
+
             // AOG Education Geography Commands
+            LOAD_STATE_MAP: (data) => {
+                this.scene.loadStateMap(data);
+            },
+            LOAD_COUNTRY_MAP: (data) => {
+                this.scene.loadCountryMap(data);
+            },
+
             // AOG Education Language Commands
             // AOG Education Reading Commands
         };
         this.commands.AOG_MAIN_MENU_SELECTION.bind(this);
+        
+        // Bind AOG Education Geography Commands
+        this.commands.LOAD_COUNTRY_MAP.bind(this);
+        this.commands.LOAD_STATE_MAP.bind(this);
     }
     /**
      * Register all callbacks used by Interactive Canvas

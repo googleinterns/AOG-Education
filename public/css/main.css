@@ -4,7 +4,6 @@ html, body {
 
 canvas {
     position: fixed;
-    background-color: #fff;
 }
 
 #game {
@@ -24,3 +23,15 @@ header {
 #main-menu {
     background-image: url("../img/global/AOG\ Education.png");
 }
+
+/* Geography Section */
+path {
+    stroke: #555;
+}
+
+#map {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+}
+
