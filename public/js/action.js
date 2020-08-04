@@ -26,7 +26,6 @@ export class Action {
                 this.scene.langOpenLanguageMenu();
             },
             LANG_START_ONE_PIC: (data) => {
-                console.log("Starting One Pic");
                 this.scene.langStartOnePicOneWord(data);
             },
             LANG_ONE_PIC_SHOW_ENGLISH: (data) => {

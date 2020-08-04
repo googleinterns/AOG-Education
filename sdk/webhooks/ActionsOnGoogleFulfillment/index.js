@@ -59,7 +59,6 @@ app.handle("aog_main_menu_selection", (conv) => {
     const selection = conv.intent.params.selection
         ? conv.intent.params.selection.resolved
         : null;
-    console.log(selection);
     conv.add(`Ok, starting ${selection}.`);
     conv.add(
         new Canvas({
@@ -71,7 +70,6 @@ app.handle("aog_main_menu_selection", (conv) => {
     );
 
     if (selection == "language") {
-        console.log("Opening language");
         conv.scene.next.name = "lang_menu";
     }
 });

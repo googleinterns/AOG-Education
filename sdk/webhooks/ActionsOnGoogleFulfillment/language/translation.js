@@ -19,7 +19,6 @@ exports.translateFunction = async function (word) {
 
     // Translates some text into Russian
     const [translation] = await translate.translate(word, target);
-    console.log(`Translation: ${translation}`);
 
     return translation;
 };
