@@ -22,11 +22,6 @@ const INSTRUCTIONS = "Hello user, This is AOG Education.";
 
 const app = conversation({ debug: true });
 
-// AOG Language Headers
-const translation = require("./language/translation");
-const imageAnalysis = require("./language/image_analysis");
-const langGameState = require("./language/lang_game_state");
-
 /**
  * AOG Education Global Handlers
  */
@@ -72,6 +67,7 @@ app.handle("aog_main_menu_selection", (conv) => {
 
     if (selection == "language") {
         conv.scene.next.name = "lang_menu";
+    }
 
     if (selection == "geography") {
         conv.scene.next.name = "geo_scene_category";
@@ -83,9 +79,9 @@ app.handle("aog_main_menu_selection", (conv) => {
  */
   
 // Load state and country data.
-const geo_statesFile = require("./geo-states");
-const geo_stateCoordsFile = require("./geo-stateCoords");
-const geo_countriesFile = require("./geo-countries");
+const geo_statesFile = require("./geography/geo-states");
+const geo_stateCoordsFile = require("./geography/geo-stateCoords");
+const geo_countriesFile = require("./geography/geo-countries");
 let geo_states, geo_stateCoords, geo_countries;
 
 // Randomly generate a new state question.
@@ -181,6 +177,11 @@ app.handle("geo_checkAnswer", (conv) => {
 /**
  * LANGUAGE SECTION
  */
+
+// AOG Language Headers
+const translation = require("./language/translation");
+const imageAnalysis = require("./language/image_analysis");
+const langGameState = require("./language/lang_game_state");
 
 const LANG_INSTRUCTIONS = "Hello user, you can open a new level or change questions.";
 
@@ -353,5 +354,6 @@ app.handle("lang_change_game", (conv) => {
 app.handle("lang_instructions", (conv) => {
     conv.add(LANG_INSTRUCTIONS);
     conv.add(new Canvas());
+});
 
 exports.ActionsOnGoogleFulfillment = functions.https.onRequest(app);
