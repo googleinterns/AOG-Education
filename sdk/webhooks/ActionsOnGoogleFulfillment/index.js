@@ -16,7 +16,7 @@
 
 const { conversation, Canvas } = require("@assistant/conversation");
 const functions = require("firebase-functions");
-const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
+// const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 
 const INSTRUCTIONS = "Hello user, This is AOG Education.";
 
@@ -40,7 +40,7 @@ app.handle("welcome", (conv) => {
     conv.add("Welcome User, thank you for choosing AOG Education");
     conv.add(
         new Canvas({
-            url: `https://step-capstone.web.app`,
+            url: "https://step-capstone.web.app",
         })
     );
 });
@@ -69,14 +69,114 @@ app.handle("aog_main_menu_selection", (conv) => {
         })
     );
 
+
     if (selection == "language") {
         conv.scene.next.name = "lang_menu";
+
+    if (selection == "geography") {
+        conv.scene.next.name = "geo_scene_category";
     }
 });
 
 /**
  * GEOGRAPHY SECTION
  */
+  
+// Load state and country data.
+const geo_statesFile = require("./geo-states");
+const geo_stateCoordsFile = require("./geo-stateCoords");
+const geo_countriesFile = require("./geo-countries");
+let geo_states, geo_stateCoords, geo_countries;
+
+// Randomly generate a new state question.
+function getNewStateQuestion(conv) {
+    conv.session.params.geo_stateInd = parseInt(Math.random() * Object.keys(geo_states).length);
+    conv.session.params.geo_state = geo_states[conv.session.params.geo_stateInd][0];
+    conv.session.params.geo_usCapital = geo_states[conv.session.params.geo_stateInd][1];
+    conv.session.params.geo_numQuestionsLeft--;
+}
+
+// Randomly generate a new country question.
+function getNewCountryQuestion(conv) {
+    conv.session.params.geo_countryInd = parseInt(Math.random() * Object.keys(geo_countries).length);
+    conv.session.params.geo_country = geo_countries[conv.session.params.geo_countryInd][0];
+    conv.session.params.geo_worldCapital = geo_countries[conv.session.params.geo_countryInd][1];
+    conv.session.params.geo_numQuestionsLeft--;
+}
+
+app.handle("geo_setup", (conv) => {
+    geo_states = geo_statesFile.states;
+    geo_stateCoords = geo_stateCoordsFile.stateCoords;
+    geo_countries = geo_countriesFile.countries;
+    conv.session.params.geo_numQuestionsLeft = 10;
+    conv.session.params.geo_correct = 0;
+    conv.session.params.geo_incorrect = 0;
+});
+
+app.handle("geo_askUSCapitalQuestion", (conv) => {
+    conv.session.params.geo_category = "USCAPITALS";
+    getNewStateQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_state}?`);
+});
+
+app.handle("geo_askWorldCapitalQuestion", (conv) => {
+    conv.session.params.geo_category = "WORLDCAPITALS";
+    getNewCountryQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_country}?`);
+});
+
+app.handle("geo_askStateQuestion", (conv) => {
+    conv.session.params.geo_category = "STATES";
+    getNewStateQuestion(conv);
+    conv.add("What is the state pictured?");
+    conv.add(new Canvas({
+        data: {
+            command: "LOAD_STATE_MAP",
+            coords: geo_stateCoords[conv.session.params.geo_state]
+        }
+    }));
+});
+
+app.handle("geo_askCountryQuestion", (conv) => {
+    conv.session.params.geo_category = "COUNTRIES";
+    getNewCountryQuestion(conv);
+    conv.add("What is the country pictured?");
+    conv.add(new Canvas({
+        data: {
+            command: "LOAD_COUNTRY_MAP",
+            country: conv.session.params.geo_country,
+            region: geo_countries[conv.session.params.geo_countryInd][2]
+        }
+    }));
+});
+
+app.handle("geo_viewResults", (conv) => {
+    conv.add(`You got ${conv.session.params.geo_correct} questions correct and ${conv.session.params.geo_incorrect} questions incorrect.`);
+});
+
+app.handle("geo_checkAnswer", (conv) => {
+    let correctAnswer;
+    if (conv.session.params.geo_category == "USCAPITALS") {
+        correctAnswer = conv.session.params.geo_usCapital;
+    } else if (conv.session.params.geo_category == "STATES") {
+        correctAnswer = conv.session.params.geo_state;
+    } else if (conv.session.params.geo_category == "COUNTRIES") {
+        correctAnswer = conv.session.params.geo_country;
+    } else if (conv.session.params.geo_category == "WORLDCAPITALS") {
+        correctAnswer = conv.session.params.geo_worldCapital;
+    }
+
+    if (conv.intent.params.answer && conv.intent.params.answer.resolved.includes(correctAnswer) ||
+            conv.session.params.geo_category == "USCAPITALS" &&
+            conv.session.params.geo_state == "Alaska" &&
+            conv.intent.params.answer.resolved.includes("Juno")) {
+        conv.session.params.geo_correct++;
+        conv.add(`${correctAnswer} is correct!`);
+    } else {
+        conv.session.params.geo_incorrect++;
+        conv.add(`Sorry, that's incorrect. The correct answer is ${correctAnswer}.`);
+    }
+});
 
 /**
  * LANGUAGE SECTION
@@ -253,6 +353,5 @@ app.handle("lang_change_game", (conv) => {
 app.handle("lang_instructions", (conv) => {
     conv.add(LANG_INSTRUCTIONS);
     conv.add(new Canvas());
-});
 
 exports.ActionsOnGoogleFulfillment = functions.https.onRequest(app);
