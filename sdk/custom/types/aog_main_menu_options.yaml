@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 synonym:
-  entities:
-    language:
-      synonyms:
-      - language
-    reading:
-      synonyms:
-      - reading
-      - read
-    geography:
-      synonyms:
-      - geography
-      - geos
-  matchType: EXACT_MATCH
+    entities:
+        language:
+            synonyms:
+                - language
+        reading:
+            synonyms:
+                - reading
+                - read
+        geography:
+            synonyms:
+                - geography
+                - geos
+    matchType: EXACT_MATCH

@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 intentEvents:
-- handler:
-    webhookHandler: aog_instructions
-  intent: aog_instructions
-  transitionToScene: aog_main_menu
-- handler:
-    webhookHandler: aog_main_menu_selection
-  intent: aog_main_menu_selection
-  transitionToScene: aog_main_menu
+    - handler:
+          webhookHandler: aog_instructions
+      intent: aog_instructions
+      transitionToScene: aog_main_menu
+    - handler:
+          webhookHandler: aog_main_menu_selection
+      intent: aog_main_menu_selection
+      transitionToScene: aog_main_menu

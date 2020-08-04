@@ -11,20 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-handlers:
-    - name: welcome
-    - name: aog_instructions
-    - name: aog_main_menu_selection
-    - name: fallback
-    # Language Section
-    - name: lang_welcome
-    - name: lang_instructions
-    - name: lang_fallback
-    - name: lang_start_one_pic
-    - name: lang_start_vocab
-    - name: lang_one_pic_word
-    - name: lang_one_pic_word_translation
-    - name: lang_one_pic_next_question
-    - name: lang_change_game
-httpsEndpoint:
-    baseUrl: "https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment"
+intentEvents:
+    - handler:
+          webhookHandler: lang_change_game
+      intent: lang_change_game
+      transitionToScene: lang_menu
+    - handler:
+          webhookHandler: lang_one_pic_word_translation
+      intent: lang_one_pic_word_translation
+      transitionToScene: lang_one_pic_translation
+    - handler:
+          webhookHandler: lang_one_pic_next_question
+      intent: lang_one_pic_next_question
+      transitionToScene: lang_one_pic

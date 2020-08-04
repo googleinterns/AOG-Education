@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     height: 100%;
 }
 
@@ -23,4 +24,43 @@ header {
 
 #main-menu {
     background-image: url("../img/global/AOG\ Education.png");
+}
+
+.right-align {
+    text-align: end;
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
+.white-background {
+    background-color: #fff;
+}
+
+/* Language Section */
+#math-menu {
+    margin-top: 152px;
+}
+
+.math-menu-card {
+    margin-bottom: 32px;
+}
+
+.card-title {
+    margin-top: 0.75rem;
+}
+
+.question-image {
+    width: 500px;
+    height: 500px;
+    object-fit: contain;
+}
+
+.next-question {
+    margin-top: 42px;
 }
