@@ -30,9 +30,28 @@ export class Action {
             },
 
             // AOG Education Language Commands
+            LANG_MENU: (data) => {
+                this.scene.langOpenLanguageMenu();
+            },
+            LANG_START_ONE_PIC: (data) => {
+                this.scene.langStartOnePicOneWord(data);
+            },
+            LANG_ONE_PIC_SHOW_ENGLISH: (data) => {
+                this.scene.langOnePicOneWordShowEnglish(data);
+            },
+            LANG_ONE_PIC_SHOW_SPANISH: (data) => {
+                this.scene.langOnePicOneWordShowSpanish(data);
+            },
             // AOG Education Reading Commands
         };
         this.commands.AOG_MAIN_MENU_SELECTION.bind(this);
+        // AOG Education Geography Commands
+        // AOG Education Language Commands
+        this.commands.LANG_START_ONE_PIC.bind(this);
+        this.commands.LANG_ONE_PIC_SHOW_ENGLISH.bind(this);
+        this.commands.LANG_ONE_PIC_SHOW_SPANISH.bind(this);
+        this.commands.LANG_MENU.bind(this);
+        // AOG Education Reading Commands
         
         // Bind AOG Education Geography Commands
         this.commands.LOAD_COUNTRY_MAP.bind(this);

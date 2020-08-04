@@ -1,12 +1,29 @@
-import { OnePicOneWord } from "./one_pic_one_word.js";
+/**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-export class LanguageMain {
-    languageElement = document.createElement("div");
-    onePicOneWord = new OnePicOneWord();
+export class Menu {
+    /**
+     * Initializes the game with visual components.
+     */
+
+    menu = document.createElement("div");
 
     constructor() {
-        this.languageElement.id = "math-menu";
-        this.languageElement.classList.add(
+        this.menu.id = "math-menu";
+        this.menu.classList.add(
             "container",
             "align-items-center",
             "justify-content-center"
@@ -18,7 +35,7 @@ export class LanguageMain {
         menuRow.appendChild(this.createMenuElement("One Pic One Word"));
         menuRow.appendChild(this.createMenuElement("One Pic Multiple Words"));
         menuRow.appendChild(this.createMenuElement("Vocabulary"));
-        this.languageElement.appendChild(menuRow);
+        this.menu.appendChild(menuRow);
     }
 
     /**
@@ -46,7 +63,7 @@ export class LanguageMain {
         return menuCol;
     }
 
-    getLanguageElement() {
-        return this.languageElement;
+    getMenu() {
+        return this.menu;
     }
 }

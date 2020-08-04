@@ -12,6 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 handlers:
+    - name: welcome
+    - name: aog_instructions
+    - name: aog_main_menu_selection
+    - name: fallback
+    # Language Section
+    - name: lang_welcome
+    - name: lang_instructions
+    - name: lang_fallback
+    - name: lang_start_one_pic
+    - name: lang_start_vocab
+    - name: lang_one_pic_word
+    - name: lang_one_pic_word_translation
+    - name: lang_one_pic_next_question
+    - name: lang_change_game
+    # Geography Section
 - name: welcome
 - name: aog_instructions
 - name: aog_main_menu_selection
@@ -25,3 +40,4 @@ handlers:
 - name: geo_viewResults
 inlineCloudFunction:
   executeFunction: ActionsOnGoogleFulfillment
+  
