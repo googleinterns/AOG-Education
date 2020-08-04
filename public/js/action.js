@@ -23,10 +23,10 @@ export class Action {
 
             // AOG Education Geography Commands
             LOAD_STATE_MAP: (data) => {
-                this.scene.loadStateMap();
+                this.scene.loadStateMap(data);
             },
             LOAD_COUNTRY_MAP: (data) => {
-                this.scene.loadCountryMap();
+                this.scene.loadCountryMap(data);
             },
 
             // AOG Education Language Commands

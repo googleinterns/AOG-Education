@@ -21,7 +21,7 @@ export class Scene {
         this.game.appendChild(this.geography.getGeographyElement());
     }
 
-    loadStateMap() {
+    loadStateMap(data) {
         if (!this.map)  this.openGeographyMap();
 
         const coords = data.coords;
@@ -66,7 +66,7 @@ export class Scene {
         this.map.set('styles', labelsOff);
     }
 
-    loadCountryMap() {
+    loadCountryMap(data) {
         if (!this.map) this.openGeographyMap();
 
         this.map = new google.visualization.GeoChart(document.getElementById('map'));
