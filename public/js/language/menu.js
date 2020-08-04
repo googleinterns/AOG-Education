@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Represent Triangle scene
- */
 export class Menu {
     /**
      * Initializes the game with visual components.

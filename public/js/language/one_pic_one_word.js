@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Represent Triangle scene
- */
 export class OnePicOneWord {
     /**
      * Initializes the game with visual components.
