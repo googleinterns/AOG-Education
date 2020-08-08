@@ -1,2 +1,0 @@
-onEnter:
-  webhookHandler: geo_viewResults

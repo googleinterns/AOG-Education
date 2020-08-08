@@ -2,7 +2,7 @@
  * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this _file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
@@ -16,6 +16,7 @@
 
 const { conversation, Canvas } = require("@assistant/conversation");
 const functions = require("firebase-functions");
+const _ = require("lodash");
 // const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 
 const INSTRUCTIONS = "Hello user, This is AOG Education.";
@@ -70,7 +71,7 @@ app.handle("aog_main_menu_selection", (conv) => {
     }
 
     if (selection == "geography") {
-        conv.scene.next.name = "geo_scene_category";
+        conv.scene.next.name = "geo_menu";
     }
 });
 
@@ -79,98 +80,140 @@ app.handle("aog_main_menu_selection", (conv) => {
  */
   
 // Load state and country data.
-const geo_statesFile = require("./geography/geo-states");
-const geo_stateCoordsFile = require("./geography/geo-stateCoords");
-const geo_countriesFile = require("./geography/geo-countries");
-let geo_states, geo_stateCoords, geo_countries;
+const geo_states_file = require("./states");
+const geo_state_coords_file = require("./state_coords");
+const geo_countries_file = require("./countries");
+let geo_states, geo_state_coords, geo_countries;
 
-// Randomly generate a new state question.
+/**
+ * Randomly generate a new state question.
+ */
 function getNewStateQuestion(conv) {
-    conv.session.params.geo_stateInd = parseInt(Math.random() * Object.keys(geo_states).length);
-    conv.session.params.geo_state = geo_states[conv.session.params.geo_stateInd][0];
-    conv.session.params.geo_usCapital = geo_states[conv.session.params.geo_stateInd][1];
-    conv.session.params.geo_numQuestionsLeft--;
+    const ind = parseInt(Math.random() * Object.keys(geo_states).length);
+    conv.session.params.geo_state = geo_states[ind][0];
+    conv.session.params.geo_us_capital = geo_states[ind][1];
+    conv.session.params.geo_num_questions_left--;
+    delete geo_states[ind];
 }
 
-// Randomly generate a new country question.
+/**
+ * Randomly generate a new country question.
+ */
 function getNewCountryQuestion(conv) {
-    conv.session.params.geo_countryInd = parseInt(Math.random() * Object.keys(geo_countries).length);
-    conv.session.params.geo_country = geo_countries[conv.session.params.geo_countryInd][0];
-    conv.session.params.geo_worldCapital = geo_countries[conv.session.params.geo_countryInd][1];
-    conv.session.params.geo_numQuestionsLeft--;
+    const ind = parseInt(Math.random() * Object.keys(geo_countries).length);
+    conv.session.params.geo_country_ind = ind;
+    conv.session.params.geo_country = geo_countries[ind][0];
+    conv.session.params.geo_world_capital = geo_countries[ind][1];
+    conv.session.params.geo_num_questions_left--;
+    delete geo_countries[ind];
 }
 
+/**
+ * Load states and countries data and initialize the number of questions
+ * and the number of questions answered correctly and incorrectly.
+ */
 app.handle("geo_setup", (conv) => {
-    geo_states = geo_statesFile.states;
-    geo_stateCoords = geo_stateCoordsFile.stateCoords;
-    geo_countries = geo_countriesFile.countries;
-    conv.session.params.geo_numQuestionsLeft = 10;
-    conv.session.params.geo_correct = 0;
-    conv.session.params.geo_incorrect = 0;
+    geo_states = _.cloneDeep(geo_states_file.states);
+    geo_state_coords = geo_state_coords_file.stateCoords;
+    geo_countries = _.cloneDeep(geo_countries_file.countries);
+    conv.session.params.geo_num_questions_left = 10;
+    conv.session.params.geo_num_correct = 0;
+    conv.session.params.geo_num_incorrect = 0;
+    conv.session.params.geo_correct = [];
+    conv.session.params.geo_incorrect = [];
+    conv.user.params.geo_question_bank = [];
 });
 
-app.handle("geo_askUSCapitalQuestion", (conv) => {
-    conv.session.params.geo_category = "USCAPITALS";
+/**
+ * Ask US capital question.
+ */
+app.handle("geo_us_capital", (conv) => {
+    conv.session.params.geo_category = "US_CAPITALS";
     getNewStateQuestion(conv);
     conv.add(`What is the capital of ${conv.session.params.geo_state}?`);
 });
 
-app.handle("geo_askWorldCapitalQuestion", (conv) => {
-    conv.session.params.geo_category = "WORLDCAPITALS";
+/**
+ * Ask world capital question.
+ */
+app.handle("geo_world_capital", (conv) => {
+    conv.session.params.geo_category = "WORLD_CAPITALS";
     getNewCountryQuestion(conv);
     conv.add(`What is the capital of ${conv.session.params.geo_country}?`);
 });
 
-app.handle("geo_askStateQuestion", (conv) => {
+/**
+ * Ask US state question and load the state map in question.
+ */
+app.handle("geo_state", (conv) => {
     conv.session.params.geo_category = "STATES";
     getNewStateQuestion(conv);
     conv.add("What is the state pictured?");
     conv.add(new Canvas({
         data: {
-            command: "LOAD_STATE_MAP",
-            coords: geo_stateCoords[conv.session.params.geo_state]
+            command: "GEO_LOAD_STATE_MAP",
+            coords: geo_state_coords[conv.session.params.geo_state]
         }
     }));
 });
 
-app.handle("geo_askCountryQuestion", (conv) => {
+/**
+ * Ask country question and load the country map in question.
+ */
+app.handle("geo_country", (conv) => {
     conv.session.params.geo_category = "COUNTRIES";
     getNewCountryQuestion(conv);
     conv.add("What is the country pictured?");
     conv.add(new Canvas({
         data: {
-            command: "LOAD_COUNTRY_MAP",
+            command: "GEO_LOAD_COUNTRY_MAP",
             country: conv.session.params.geo_country,
-            region: geo_countries[conv.session.params.geo_countryInd][2]
+            region: geo_countries[conv.session.params.geo_country_ind][2]
         }
     }));
 });
 
-app.handle("geo_viewResults", (conv) => {
-    conv.add(`You got ${conv.session.params.geo_correct} questions correct and ${conv.session.params.geo_incorrect} questions incorrect.`);
+/**
+ * Load results page displaying questions answered correctly and incorrectly.
+ */
+app.handle("geo_results", (conv) => {
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_SHOW_RESULTS",
+            numCorrect: conv.session.params.geo_num_correct,
+            numIncorrect: conv.session.params.geo_num_incorrect,
+            correct: conv.session.params.geo_correct,
+            incorrect: conv.session.params.geo_incorrect
+        }
+    }));
 });
 
-app.handle("geo_checkAnswer", (conv) => {
-    let correctAnswer;
-    if (conv.session.params.geo_category == "USCAPITALS") {
-        correctAnswer = conv.session.params.geo_usCapital;
+/**
+ * Check whether the answer is correct and display the corresponding message.
+ */
+app.handle("geo_check_answer", (conv) => {
+    let answer;
+    if (conv.session.params.geo_category == "US_CAPITALS") {
+        answer = conv.session.params.geo_us_capital;
     } else if (conv.session.params.geo_category == "STATES") {
-        correctAnswer = conv.session.params.geo_state;
+        answer = conv.session.params.geo_state;
     } else if (conv.session.params.geo_category == "COUNTRIES") {
-        correctAnswer = conv.session.params.geo_country;
-    } else if (conv.session.params.geo_category == "WORLDCAPITALS") {
-        correctAnswer = conv.session.params.geo_worldCapital;
+        answer = conv.session.params.geo_country;
+    } else if (conv.session.params.geo_category == "WORLD_CAPITALS") {
+        answer = conv.session.params.geo_world_capital;
     }
 
-    if (conv.intent.params.answer && conv.intent.params.answer.resolved.includes(correctAnswer) ||
-            conv.session.params.geo_category == "USCAPITALS" &&
+    if (conv.intent.params.answer && conv.intent.params.answer.resolved.includes(answer) ||
+            conv.session.params.geo_category == "US_CAPITALS" &&
             conv.session.params.geo_state == "Alaska" &&
             conv.intent.params.answer.resolved.includes("Juno")) {
-        conv.session.params.geo_correct++;
-        conv.add(`${correctAnswer} is correct!`);
+        conv.session.params.geo_num_correct++;
+        conv.session.params.geo_correct.push(answer);
+        conv.add(`${answer} is correct!`);
     } else {
-        conv.session.params.geo_incorrect++;
-        conv.add(`Sorry, that's incorrect. The correct answer is ${correctAnswer}.`);
+        conv.session.params.geo_num_incorrect++;
+        conv.session.params.geo_incorrect.push(answer);
+        conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
     }
 });
 
@@ -179,9 +222,9 @@ app.handle("geo_checkAnswer", (conv) => {
  */
 
 // AOG Language Headers
-const translation = require("./language/translation");
-const imageAnalysis = require("./language/image_analysis");
-const langGameState = require("./language/lang_game_state");
+const translation = require("./translation");
+const imageAnalysis = require("./image_analysis");
+const langGameState = require("./lang_game_state");
 
 const LANG_INSTRUCTIONS = "Hello user, you can open a new level or change questions.";
 
@@ -267,17 +310,17 @@ app.handle("lang_one_pic_word", (conv) => {
     conv.add(`Ok, let's see if ${word} is correct`);
 
     // TODO: Uncomment when authentication has been added
-    // const correctAnswer = conv.user.params.onePicAnswer;
-    const correctAnswer = langGameState.game_state.onePicAnswer;
+    // const answer = conv.user.params.onePicAnswer;
+    const answer = langGameState.game_state.onePicAnswer;
     const userAnswer = String(word);
 
-    if (userAnswer.toLowerCase() == correctAnswer.toLowerCase()) {
+    if (userAnswer.toLowerCase() == answer.toLowerCase()) {
         conv.add(`That is correct! Try translating it to spanish`);
         conv.add(
             new Canvas({
                 data: {
                     command: "LANG_ONE_PIC_SHOW_ENGLISH",
-                    word: correctAnswer,
+                    word: answer,
                 },
             })
         );
@@ -298,10 +341,10 @@ app.handle("lang_one_pic_word_translation", (conv) => {
 
     conv.add(`Ok, let's see if ${word} is correct`);
     // TODO: Uncomment when authentication has been added
-    // const correctAnswer = conv.user.params.onePicAnswer;
-    const correctAnswer = langGameState.game_state.onePicAnswer;
+    // const answer = conv.user.params.onePicAnswer;
+    const answer = langGameState.game_state.onePicAnswer;
     return translation
-        .translateFunction(correctAnswer)
+        .translateFunction(answer)
         .then((value) => {
             const userAnswer = String(word);
             if (userAnswer.toLowerCase() == value.toLowerCase()) {

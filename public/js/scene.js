@@ -1,6 +1,7 @@
 import { AogMainMenu } from "./global/aog-main-menu.js";
 import { GeographyMain } from "./geography/geography-main.js";
 import { GeographyMap } from "./geography/geography-map.js";
+import { GeographyResults } from "./geography/geography-results.js";
 import { LanguageMain } from "./language/language-main.js";
 import { ReadingMain } from "./reading/reading-main.js";
 
@@ -8,6 +9,7 @@ export class Scene {
     menu = new AogMainMenu();
     geography = new GeographyMain();
     geography_map = new GeographyMap();
+    geography_results = new GeographyResults();
     language = new LanguageMain();
     reading = new ReadingMain();
     game = document.getElementById("game");
@@ -21,8 +23,25 @@ export class Scene {
         this.game.appendChild(this.geography.getGeographyElement());
     }
 
-    loadStateMap(data) {
-        if (!this.map)  this.openGeographyMap();
+    openLanguage() {
+        this.game.removeChild(this.menu.getMenu());
+        this.game.appendChild(this.language.getLanguageElement());
+    }
+
+    openReading() {
+        this.game.removeChild(this.menu.getMenu());
+        this.game.appendChild(this.reading.getReadingElement());
+    }
+
+    /**
+     * Geography Section
+     */
+
+    /**
+     * @param {*} data that stores the coordinates of the state.
+     */
+    geoLoadStateMap(data) {
+        if (!this.map)  this.geoOpenMap("states");
 
         const coords = data.coords;
         this.map = new google.maps.Map(document.getElementById('map'));
@@ -41,6 +60,7 @@ export class Scene {
         });
         polygon.setMap(this.map);
 
+        // Remove map labels.
         const labelsOff = [
             {
                 "elementType": "labels",
@@ -66,8 +86,11 @@ export class Scene {
         this.map.set('styles', labelsOff);
     }
 
-    loadCountryMap(data) {
-        if (!this.map) this.openGeographyMap();
+    /**
+     * @param {*} data that stores the country and M49 region.
+     */
+    geoLoadCountryMap(data) {
+        if (!this.map) this.geoOpenMap();
 
         this.map = new google.visualization.GeoChart(document.getElementById('map'));
         const dataTable = google.visualization.arrayToDataTable([
@@ -86,20 +109,22 @@ export class Scene {
         this.map.draw(dataTable, options);
     }
 
-    openGeographyMap() {
+    /**
+     * @param {*} data that stores the number of questions answered correctly and incorrectly.
+     */
+    geoShowResults(data) {
+        if (this.map) {
+            this.game.removeChild(this.geography_map.getGeographyMap());
+        }
+        this.game.appendChild(this.geography_results.getGeographyResults(
+            data.numCorrect, data.numIncorrect, data.correct, data.incorrect));
+    }
+
+    geoOpenMap(map) {
         this.game.removeChild(this.geography.getGeographyElement());
-        this.game.appendChild(this.geography_map.getGeographyMap());
+        this.game.appendChild(this.geography_map.getGeographyMap(map));
     }
 
-    openLanguage() {
-        this.game.removeChild(this.menu.getMenu());
-        this.game.appendChild(this.language.getLanguageElement());
-    }
-
-    openReading() {
-        this.game.removeChild(this.menu.getMenu());
-        this.game.appendChild(this.reading.getReadingElement());
-    }
 
     /**
      * Language Section

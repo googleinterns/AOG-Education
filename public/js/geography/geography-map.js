@@ -5,7 +5,10 @@ export class GeographyMap {
         this.geographyMap.id = "map";
     }
 
-    getGeographyMap() {
+    getGeographyMap(map) {
+        if (map == "states") {
+            this.geographyMap.style.height = "100%";
+        }
         return this.geographyMap;
     }
 }

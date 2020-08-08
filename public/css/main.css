@@ -67,6 +67,30 @@ path {
 
 #map {
     position: relative;
-    height: 100vh;
-    width: 100vw;
+}
+
+h3.geo {
+    font-size: 5vw;
+}
+
+h4.geo {
+    font-size: 3vw;
+}
+
+ul.geo {
+    border-radius: 2px;
+    list-style-type: none;
+    padding: 0.5rem;
+}
+
+.geo > li {
+    font-size: 1.5vw;
+}
+
+.geo-correct {
+    background-color: #80ff80;
+}
+
+.geo-incorrect {
+    background-color: #ff8080;
 }

@@ -1,7 +1,7 @@
 parameters:
 - name: answer
   type:
-    name: geo_type_answer
+    name: geo_answer
 
 trainingPhrases:
 - It is ($answer 'California' auto=true)?
