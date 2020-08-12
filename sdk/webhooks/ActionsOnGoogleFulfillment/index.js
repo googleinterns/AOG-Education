@@ -16,7 +16,6 @@
 
 const { conversation, Canvas } = require("@assistant/conversation");
 const functions = require("firebase-functions");
-const _ = require("lodash");
 // const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 
 const INSTRUCTIONS = "Hello user, This is AOG Education.";
@@ -79,75 +78,58 @@ app.handle("aog_main_menu_selection", (conv) => {
  * GEOGRAPHY SECTION
  */
   
-// Load state and country data.
-const geo_states_file = require("./states");
+// Load functions and state coordinates data.
+const geo_functions = require("./functions");
+console.log("geo_functions: "+geo_functions);
 const geo_state_coords_file = require("./state_coords");
-const geo_countries_file = require("./countries");
-let geo_states, geo_state_coords, geo_countries;
+const geo_state_coords = geo_state_coords_file.stateCoords;
 
-/**
- * Randomly generate a new state question.
- */
-function getNewStateQuestion(conv) {
-    const ind = parseInt(Math.random() * Object.keys(geo_states).length);
-    conv.session.params.geo_state = geo_states[ind][0];
-    conv.session.params.geo_us_capital = geo_states[ind][1];
-    conv.session.params.geo_num_questions_left--;
-    delete geo_states[ind];
-}
-
-/**
- * Randomly generate a new country question.
- */
-function getNewCountryQuestion(conv) {
-    const ind = parseInt(Math.random() * Object.keys(geo_countries).length);
-    conv.session.params.geo_country_ind = ind;
-    conv.session.params.geo_country = geo_countries[ind][0];
-    conv.session.params.geo_world_capital = geo_countries[ind][1];
-    conv.session.params.geo_num_questions_left--;
-    delete geo_countries[ind];
-}
-
-/**
- * Load states and countries data and initialize the number of questions
- * and the number of questions answered correctly and incorrectly.
- */
 app.handle("geo_setup", (conv) => {
-    geo_states = _.cloneDeep(geo_states_file.states);
-    geo_state_coords = geo_state_coords_file.stateCoords;
-    geo_countries = _.cloneDeep(geo_countries_file.countries);
-    conv.session.params.geo_num_questions_left = 10;
-    conv.session.params.geo_num_correct = 0;
-    conv.session.params.geo_num_incorrect = 0;
-    conv.session.params.geo_correct = [];
-    conv.session.params.geo_incorrect = [];
-    conv.user.params.geo_question_bank = [];
+    geo_functions.setup(conv);
+    conv.add("Choose a category - US Capitals, World Capitals, US States, or Countries.");
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_MENU"
+        }
+    }));
 });
 
 /**
  * Ask US capital question.
  */
 app.handle("geo_us_capital", (conv) => {
-    conv.session.params.geo_category = "US_CAPITALS";
-    getNewStateQuestion(conv);
+    conv.session.params.geo_category = "US_CAPITAL";
+    geo_functions.getNewStateQuestion(conv);
     conv.add(`What is the capital of ${conv.session.params.geo_state}?`);
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_CAPITAL",
+            name: conv.session.params.geo_state
+        }
+    }));
 });
 
 /**
  * Ask world capital question.
  */
 app.handle("geo_world_capital", (conv) => {
-    conv.session.params.geo_category = "WORLD_CAPITALS";
-    getNewCountryQuestion(conv);
+    conv.session.params.geo_category = "WORLD_CAPITAL";
+    geo_functions.getNewCountryQuestion(conv);
     conv.add(`What is the capital of ${conv.session.params.geo_country}?`);
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_CAPITAL",
+            name: conv.session.params.geo_country
+        }
+    }));
 });
 
 /**
  * Ask US state question and load the state map in question.
  */
 app.handle("geo_state", (conv) => {
-    conv.session.params.geo_category = "STATES";
-    getNewStateQuestion(conv);
+    conv.session.params.geo_category = "STATE";
+    geo_functions.getNewStateQuestion(conv);
     conv.add("What is the state pictured?");
     conv.add(new Canvas({
         data: {
@@ -161,14 +143,14 @@ app.handle("geo_state", (conv) => {
  * Ask country question and load the country map in question.
  */
 app.handle("geo_country", (conv) => {
-    conv.session.params.geo_category = "COUNTRIES";
-    getNewCountryQuestion(conv);
+    conv.session.params.geo_category = "COUNTRY";
+    geo_functions.getNewCountryQuestion(conv);
     conv.add("What is the country pictured?");
     conv.add(new Canvas({
         data: {
             command: "GEO_LOAD_COUNTRY_MAP",
             country: conv.session.params.geo_country,
-            region: geo_countries[conv.session.params.geo_country_ind][2]
+            region: conv.session.params.geo_country_region
         }
     }));
 });
@@ -192,29 +174,19 @@ app.handle("geo_results", (conv) => {
  * Check whether the answer is correct and display the corresponding message.
  */
 app.handle("geo_check_answer", (conv) => {
-    let answer;
-    if (conv.session.params.geo_category == "US_CAPITALS") {
-        answer = conv.session.params.geo_us_capital;
-    } else if (conv.session.params.geo_category == "STATES") {
-        answer = conv.session.params.geo_state;
-    } else if (conv.session.params.geo_category == "COUNTRIES") {
-        answer = conv.session.params.geo_country;
-    } else if (conv.session.params.geo_category == "WORLD_CAPITALS") {
-        answer = conv.session.params.geo_world_capital;
-    }
+    const answer = geo_functions.getCorrectAnswer(conv);
 
-    if (conv.intent.params.answer && conv.intent.params.answer.resolved.includes(answer) ||
-            conv.session.params.geo_category == "US_CAPITALS" &&
-            conv.session.params.geo_state == "Alaska" &&
-            conv.intent.params.answer.resolved.includes("Juno")) {
+    if (geo_functions.isCorrect(conv, answer)) {
         conv.session.params.geo_num_correct++;
         conv.session.params.geo_correct.push(answer);
         conv.add(`${answer} is correct!`);
+        geo_functions.removeQuestion(conv);
     } else {
         conv.session.params.geo_num_incorrect++;
         conv.session.params.geo_incorrect.push(answer);
         conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
     }
+    conv.add(new Canvas());
 });
 
 /**

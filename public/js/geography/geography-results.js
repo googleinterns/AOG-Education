@@ -23,7 +23,7 @@ export class GeographyResults {
 
     getListContainer(resultsContainer, category, categoryClass, list) {
         let div = document.createElement("div");
-        div.classList.add("col");
+        div.classList.add("col-sm-6");
         resultsContainer.appendChild(div);
 
         let header = document.createElement("h4");
@@ -33,13 +33,17 @@ export class GeographyResults {
         div.appendChild(this.getList(categoryClass, list));
     }
 
-    getGeographyResults(numCorrect, numIncorrect, correct, incorrect) {
+    getGeographyResults() {
+        return this.geographyResults;
+    }
+
+    setGeographyResults(numCorrect, numIncorrect, correct, incorrect) {
         let results = document.createElement("div");
         results.classList.add("row", "h-100", "justify-content-center", "align-items-center");
         this.geographyResults.appendChild(results);
 
         let resultsHeader = document.createElement("h3");
-        resultsHeader.classList.add("col", "geo");
+        resultsHeader.classList.add("col-sm-6", "geo");
 
         let correctQuestions = "question", incorrectQuestions = "question";
         if (numCorrect != 1)   correctQuestions += "s";

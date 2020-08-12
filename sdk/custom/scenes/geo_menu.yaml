@@ -1,15 +1,4 @@
 onEnter:
-  staticPrompt:
-    candidates:
-    - promptResponse:
-        firstSimple:
-          variants:
-          - speech: Choose a category - US Capitals, World Capitals, US States, or Countries.
-        suggestions:
-        - title: "U.S. Capitals"
-        - title: "World Capitals"
-        - title: "U.S. States"
-        - title: "Countries"
   webhookHandler: geo_setup
 
 intentEvents:

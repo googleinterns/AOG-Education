@@ -37,11 +37,22 @@ export class Scene {
      * Geography Section
      */
 
+    geoMenu() {
+        this.game.removeChild(this.geography_results.getGeographyResults());
+        this.game.appendChild(this.geography.getGeographyElement());
+    }
+
+    geoCapital(data) {
+        this.geoRemoveGeographyElement();
+        this.game.appendChild(this.geography.getGeographyElement(data.name));
+    }
+
     /**
      * @param {*} data that stores the coordinates of the state.
      */
     geoLoadStateMap(data) {
-        if (!this.map)  this.geoOpenMap("states");
+        this.geoRemoveGeographyElement();
+        this.geoOpenMap("states");
 
         const coords = data.coords;
         this.map = new google.maps.Map(document.getElementById('map'));
@@ -90,7 +101,8 @@ export class Scene {
      * @param {*} data that stores the country and M49 region.
      */
     geoLoadCountryMap(data) {
-        if (!this.map) this.geoOpenMap();
+        this.geoRemoveGeographyElement();
+        this.geoOpenMap("countries");
 
         this.map = new google.visualization.GeoChart(document.getElementById('map'));
         const dataTable = google.visualization.arrayToDataTable([
@@ -113,16 +125,28 @@ export class Scene {
      * @param {*} data that stores the number of questions answered correctly and incorrectly.
      */
     geoShowResults(data) {
-        if (this.map) {
-            this.game.removeChild(this.geography_map.getGeographyMap());
-        }
-        this.game.appendChild(this.geography_results.getGeographyResults(
+        this.geoRemoveGeographyElement();
+        this.geoRemoveMap();
+        this.game.appendChild(this.geography_results.setGeographyResults(
             data.numCorrect, data.numIncorrect, data.correct, data.incorrect));
     }
 
     geoOpenMap(map) {
-        this.game.removeChild(this.geography.getGeographyElement());
-        this.game.appendChild(this.geography_map.getGeographyMap(map));
+        if (!this.game.contains(this.geography_map.getGeographyMap())) {
+            this.game.appendChild(this.geography_map.getGeographyMap(map));
+        }
+    }
+
+    geoRemoveGeographyElement() {
+        if (this.game.contains(this.geography.getGeographyElement())) {
+            this.game.removeChild(this.geography.getGeographyElement());
+        }
+    }
+
+    geoRemoveMap() {
+        if (this.game.contains(this.geography_map.getGeographyMap())) {
+            this.game.removeChild(this.geography_map.getGeographyMap());
+        }
     }
 
 

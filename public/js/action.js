@@ -22,6 +22,12 @@ export class Action {
             },
 
             // AOG Education Geography Commands
+            GEO_MENU: (data) => {
+                this.scene.geoMenu(data);
+            },
+            GEO_CAPITAL: (data) => {
+                this.scene.geoCapital(data);
+            },
             GEO_LOAD_STATE_MAP: (data) => {
                 this.scene.geoLoadStateMap(data);
             },
@@ -50,6 +56,8 @@ export class Action {
         this.commands.AOG_MAIN_MENU_SELECTION.bind(this);
 
         // AOG Education Geography Commands
+        this.commands.GEO_MENU.bind(this);
+        this.commands.GEO_CAPITAL.bind(this);
         this.commands.GEO_LOAD_COUNTRY_MAP.bind(this);
         this.commands.GEO_LOAD_STATE_MAP.bind(this);
         this.commands.GEO_SHOW_RESULTS.bind(this);
