@@ -42,18 +42,24 @@ export class Scene {
         this.game.appendChild(this.geography.getGeographyElement());
     }
 
+    /**
+     * Displays capital question.
+     * @param {*} data contains name of state or country in question
+     */
     geoCapital(data) {
         this.geoRemoveGeographyElement();
         this.game.appendChild(this.geography.getGeographyElement(data.name));
     }
 
     /**
-     * @param {*} data that stores the coordinates of the state.
+     * Loads map corresponding to state question.
+     * @param {*} data stores the coordinates of the state
      */
     geoLoadStateMap(data) {
         this.geoRemoveGeographyElement();
         this.geoOpenMap("states");
 
+        // Set map center and zoom.
         const coords = data.coords;
         this.map = new google.maps.Map(document.getElementById('map'));
         this.map.setCenter({lat: coords[0].lat, lng: coords[0].lng});
@@ -94,22 +100,27 @@ export class Scene {
                 ]
             }
         ];
+
+        // Set map labels.
         this.map.set('styles', labelsOff);
     }
 
     /**
-     * @param {*} data that stores the country and M49 region.
+     * Loads map corresponding to country question.
+     * @param {*} data that stores the country and M49 region
      */
     geoLoadCountryMap(data) {
         this.geoRemoveGeographyElement();
         this.geoOpenMap("countries");
 
+        // Create chart.
         this.map = new google.visualization.GeoChart(document.getElementById('map'));
         const dataTable = google.visualization.arrayToDataTable([
             ['Country'],
             [data.country],
         ]);
 
+        // Set styling, map region, and map interactivity.
         const options = {
             backgroundColor: '#81d4fa',
             datalessRegionColor: '#ffd7e9',
@@ -118,6 +129,7 @@ export class Scene {
             tooltip: {trigger: 'none'},
         };
 
+        // Draw map with specified country and options.
         this.map.draw(dataTable, options);
     }
 
@@ -127,19 +139,12 @@ export class Scene {
     geoShowResults(data) {
         this.geoRemoveGeographyElement();
         this.geoRemoveMap();
-        this.game.appendChild(this.geography_results.setGeographyResults(
-            data.numCorrect, data.numIncorrect, data.correct, data.incorrect));
+        this.game.appendChild(this.geography_results.setGeographyResults(data.correct, data.incorrect));
     }
 
     geoOpenMap(map) {
         if (!this.game.contains(this.geography_map.getGeographyMap())) {
             this.game.appendChild(this.geography_map.getGeographyMap(map));
-        }
-    }
-
-    geoRemoveGeographyElement() {
-        if (this.game.contains(this.geography.getGeographyElement())) {
-            this.game.removeChild(this.geography.getGeographyElement());
         }
     }
 
@@ -149,6 +154,11 @@ export class Scene {
         }
     }
 
+    geoRemoveGeographyElement() {
+        if (this.game.contains(this.geography.getGeographyElement())) {
+            this.game.removeChild(this.geography.getGeographyElement());
+        }
+    }
 
     /**
      * Language Section

@@ -80,7 +80,6 @@ app.handle("aog_main_menu_selection", (conv) => {
   
 // Load functions and state coordinates data.
 const geo_functions = require("./functions");
-console.log("geo_functions: "+geo_functions);
 const geo_state_coords_file = require("./state_coords");
 const geo_state_coords = geo_state_coords_file.stateCoords;
 
@@ -99,12 +98,12 @@ app.handle("geo_setup", (conv) => {
  */
 app.handle("geo_us_capital", (conv) => {
     conv.session.params.geo_category = "US_CAPITAL";
-    geo_functions.getNewStateQuestion(conv);
-    conv.add(`What is the capital of ${conv.session.params.geo_state}?`);
+    geo_functions.getQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
     conv.add(new Canvas({
         data: {
             command: "GEO_CAPITAL",
-            name: conv.session.params.geo_state
+            name: conv.session.params.geo_name
         }
     }));
 });
@@ -114,12 +113,12 @@ app.handle("geo_us_capital", (conv) => {
  */
 app.handle("geo_world_capital", (conv) => {
     conv.session.params.geo_category = "WORLD_CAPITAL";
-    geo_functions.getNewCountryQuestion(conv);
-    conv.add(`What is the capital of ${conv.session.params.geo_country}?`);
+    geo_functions.getQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
     conv.add(new Canvas({
         data: {
             command: "GEO_CAPITAL",
-            name: conv.session.params.geo_country
+            name: conv.session.params.geo_name
         }
     }));
 });
@@ -129,12 +128,12 @@ app.handle("geo_world_capital", (conv) => {
  */
 app.handle("geo_state", (conv) => {
     conv.session.params.geo_category = "STATE";
-    geo_functions.getNewStateQuestion(conv);
+    geo_functions.getQuestion(conv);
     conv.add("What is the state pictured?");
     conv.add(new Canvas({
         data: {
             command: "GEO_LOAD_STATE_MAP",
-            coords: geo_state_coords[conv.session.params.geo_state]
+            coords: geo_state_coords[conv.session.params.geo_name]
         }
     }));
 });
@@ -144,13 +143,13 @@ app.handle("geo_state", (conv) => {
  */
 app.handle("geo_country", (conv) => {
     conv.session.params.geo_category = "COUNTRY";
-    geo_functions.getNewCountryQuestion(conv);
+    geo_functions.getQuestion(conv);
     conv.add("What is the country pictured?");
     conv.add(new Canvas({
         data: {
             command: "GEO_LOAD_COUNTRY_MAP",
-            country: conv.session.params.geo_country,
-            region: conv.session.params.geo_country_region
+            country: conv.session.params.geo_name,
+            region: conv.session.params.geo_region
         }
     }));
 });
@@ -162,8 +161,6 @@ app.handle("geo_results", (conv) => {
     conv.add(new Canvas({
         data: {
             command: "GEO_SHOW_RESULTS",
-            numCorrect: conv.session.params.geo_num_correct,
-            numIncorrect: conv.session.params.geo_num_incorrect,
             correct: conv.session.params.geo_correct,
             incorrect: conv.session.params.geo_incorrect
         }
@@ -176,13 +173,19 @@ app.handle("geo_results", (conv) => {
 app.handle("geo_check_answer", (conv) => {
     const answer = geo_functions.getCorrectAnswer(conv);
 
+    // Store question as correct or incorrect based on user's last response.
+    if (conv.session.params.geo_correct.includes(answer)) {
+        geo_functions.removeElementByValue(conv.session.params.geo_correct, answer);
+    } else if (conv.session.params.geo_incorrect.includes(answer)) {
+        geo_functions.removeElementByValue(conv.session.params.geo_incorrect, answer);
+    }
+
+    // Remove question from question bank if user answered correctly.
     if (geo_functions.isCorrect(conv, answer)) {
-        conv.session.params.geo_num_correct++;
         conv.session.params.geo_correct.push(answer);
         conv.add(`${answer} is correct!`);
         geo_functions.removeQuestion(conv);
     } else {
-        conv.session.params.geo_num_incorrect++;
         conv.session.params.geo_incorrect.push(answer);
         conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
     }
