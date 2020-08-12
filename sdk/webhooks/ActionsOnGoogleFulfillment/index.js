@@ -2,7 +2,7 @@
  * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this _file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
@@ -79,8 +79,8 @@ app.handle("aog_main_menu_selection", (conv) => {
  */
   
 // Load functions and state coordinates data.
-const geo_functions = require("./functions");
-const geo_state_coords_file = require("./state_coords");
+const geo_functions = require("./geography/functions");
+const geo_state_coords_file = require("./geography/state_coords");
 const geo_state_coords = geo_state_coords_file.stateCoords;
 
 app.handle("geo_setup", (conv) => {
@@ -197,9 +197,9 @@ app.handle("geo_check_answer", (conv) => {
  */
 
 // AOG Language Headers
-const translation = require("./translation");
-const imageAnalysis = require("./image_analysis");
-const langGameState = require("./lang_game_state");
+const translation = require("./language/translation");
+const imageAnalysis = require("./language/image_analysis");
+const langGameState = require("./language/lang_game_state");
 
 const LANG_INSTRUCTIONS = "Hello user, you can open a new level or change questions.";
 

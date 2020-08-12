@@ -1,2 +1,2 @@
 // REPLACE WITH API KEY
-export const MAPS_API_KEY = "ENTER-API-KEY";
+export const MAPS_API_KEY = "INSERT-API-KEY";

@@ -34,7 +34,7 @@ handlers:
     - name: geo_country
     - name: geo_check_answer
     - name: geo_results
-# httpsEndpoint:
-#     baseUrl: https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment
-inlineCloudFunction:
-    executeFunction: ActionsOnGoogleFulfillment
+httpsEndpoint:
+    baseUrl: https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment
+# inlineCloudFunction:
+#     executeFunction: ActionsOnGoogleFulfillment

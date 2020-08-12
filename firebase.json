@@ -28,9 +28,6 @@
     ]
   },
   "functions": {
-    "source": "sdk/webhooks/ActionsOnGoogleFulfillment",
-    "predeploy": [
-      "npm --prefix \"$RESOURCE_DIR\" run lint"
-    ]
+    "source": "sdk/webhooks/ActionsOnGoogleFulfillment"
   }
 }
