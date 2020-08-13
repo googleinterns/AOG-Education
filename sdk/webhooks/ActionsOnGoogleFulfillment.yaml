@@ -34,5 +34,13 @@ handlers:
     - name: geo_askCountryQuestion
     - name: geo_checkAnswer
     - name: geo_viewResults
+    # Reading Section
+    - name: read_welcome
+    - name: read_fallback
+    - name: read_bookSelected
+    - name: read_analyseUserInput
+    - name: read_openLibrary
+    - name: read_nextChunk
+    - name: read_restartBook
 httpsEndpoint:
     baseUrl: "https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment"

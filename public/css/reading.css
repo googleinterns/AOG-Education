@@ -1,0 +1,54 @@
+/*Library Class Styling below*/
+#libraryContainer{
+    height: 100%;
+    border: 3px solid black;
+}
+
+.flex-center{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bookshelf{
+    width: 90vw;
+    border: 2px solid blueviolet;
+    flex-direction: row;
+    display: flex;
+    justify-content: space-around;
+    height: 65%;
+}
+
+/*Book Class Styling below*/
+.book{
+    width: 35%;
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2vw 0;
+}
+
+.book p{
+    font-size: 30px;
+    text-decoration: underline;
+}
+
+.book img{
+    height: auto;
+    width: 100%;
+}
+
+/* Text Class Styling Below*/
+#book-text{
+    height: 80vh;
+    margin: 10vh 0;
+    padding: 0 10vw;
+    font-size: 40px;
+    text-align: center;
+}
+
+/* idk */
+#reading{
+    background-color: #f0d4d4;
+}

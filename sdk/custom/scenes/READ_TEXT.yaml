@@ -1,0 +1,24 @@
+conditionalEvents:
+- condition: scene.slots.status == "FINAL"
+  handler:
+    webhookHandler: read_analyseUserInput
+intentEvents:
+- handler:
+    webhookHandler: read_openLibrary
+  intent: READ_GOTO_LIBRARY
+  transitionToScene: READ_LIBRARY
+- handler:
+    webhookHandler: read_nextChunk
+  intent: READ_NEXT
+  transitionToScene: READ_TEXT
+- handler:
+    webhookHandler: read_restartBook
+  intent: READ_RESTART
+  transitionToScene: READ_TEXT
+slots:
+- commitBehavior:
+    writeSessionParam: userInput
+  name: userInput
+  required: true
+  type:
+    name: R_Input

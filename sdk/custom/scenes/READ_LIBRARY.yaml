@@ -1,0 +1,22 @@
+conditionalEvents:
+- condition: scene.slots.status == "FINAL"
+  handler:
+    webhookHandler: read_bookSelected
+  transitionToScene: READ_TEXT
+slots:
+- commitBehavior:
+    writeSessionParam: bookTitle
+  name: bookTitle
+  promptSettings:
+    initialPrompt:
+      staticPrompt:
+        candidates:
+        - promptResponse:
+            firstSimple:
+              variants:
+              - speech: What is the title of the book you would like to read?
+            suggestions:
+            - title: Child Stories
+  required: true
+  type:
+    name: R_Book
