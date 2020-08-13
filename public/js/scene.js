@@ -112,7 +112,7 @@ export class Scene {
 
     /**
      * Shows the english word after the user guesses it correctly
-     * @param {*} data stores the correct english word and its index to be shown. 
+     * @param {*} data stores the correct english word and its index to be shown.
      * Also tells us if the user has guessed all english words so that the spanish
      * section can be shown.
      */
@@ -155,7 +155,7 @@ export class Scene {
 
     /**
      * Returns to the main menu from the current game session
-     * @param {*} scene so that the correct session can be removed before 
+     * @param {*} scene so that the correct session can be removed before
      * showing the menu
      */
     langOpenLanguageMenu(scene) {

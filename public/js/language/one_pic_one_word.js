@@ -15,7 +15,6 @@
  */
 
 export class OnePicOneWord {
-    
     questionContainer = document.createElement("div");
     wordsTable = document.createElement("table");
     wordsTableBody = document.createElement("tbody");
@@ -24,15 +23,11 @@ export class OnePicOneWord {
     spanishWord = document.createElement("h4");
     image = document.createElement("img");
     buttonRow = document.createElement("div");
-    attemptsData = document.createElement("td")
+    attemptsData = document.createElement("td");
 
     constructor() {
-        this.questionContainer.classList.add(
-            "container",
-            "h-100",
-            "w-100"
-        );
-        this.questionContainer.id = "one-pic-one-word"
+        this.questionContainer.classList.add("container", "h-100", "w-100");
+        this.questionContainer.id = "one-pic-one-word";
 
         const titleSection = document.createElement("div");
         titleSection.classList.add(
@@ -43,12 +38,17 @@ export class OnePicOneWord {
             "align-items-center"
         );
 
-        this.wordsTable.classList.add("table", "table-bordered", "table-dark", "pic-table");
+        this.wordsTable.classList.add(
+            "table",
+            "table-bordered",
+            "table-dark",
+            "pic-table"
+        );
 
         const tableHead = document.createElement("thead");
         const questionTitle = document.createElement("th");
         questionTitle.innerText = "One Pic One Word";
-        questionTitle.setAttribute("colspan", "2")
+        questionTitle.setAttribute("colspan", "2");
         questionTitle.classList.add("text-center", "game-heading");
         tableHead.appendChild(questionTitle);
         this.wordsTable.appendChild(tableHead);
@@ -62,11 +62,11 @@ export class OnePicOneWord {
         nextQuestionButton.setAttribute("type", "button");
         nextQuestionButton.classList.add("btn", "btn-primary");
         nextQuestionButton.innerText = "Next Question";
-        
+
         buttonData.appendChild(nextQuestionButton);
         this.buttonRow.appendChild(this.attemptsData);
         this.buttonRow.appendChild(buttonData);
-        this.wordsTable.appendChild(this.buttonRow)
+        this.wordsTable.appendChild(this.buttonRow);
 
         titleSection.append(this.wordsTable);
         this.questionContainer.appendChild(titleSection);
@@ -77,7 +77,7 @@ export class OnePicOneWord {
      * @param {*} attempts left over
      */
     setAttempts(attempts) {
-        this.attemptsData.innerText = `${attempts} attempts left`
+        this.attemptsData.innerText = `${attempts} attempts left`;
     }
 
     /**
@@ -85,10 +85,10 @@ export class OnePicOneWord {
      * @param {*} url of image
      */
     setImageURL(url) {
-        this.wordsTableBody.innerHTML = ""
+        this.wordsTableBody.innerHTML = "";
         const imageRow = document.createElement("tr");
         const imageData = document.createElement("td");
-        imageData.setAttribute("colspan", "2")
+        imageData.setAttribute("colspan", "2");
         imageData.setAttribute("align", "center");
 
         this.image.src = url;
@@ -122,9 +122,9 @@ export class OnePicOneWord {
             }
         }
         wordElement.innerHTML = dashedWord;
-        wordElement.id = `${String(language).toLowerCase()}-word`
+        wordElement.id = `${String(language).toLowerCase()}-word`;
 
-        tableHead.appendChild(wordElement)
+        tableHead.appendChild(wordElement);
         this.wordsTableBody.appendChild(tableHead);
     }
 
@@ -135,7 +135,7 @@ export class OnePicOneWord {
      */
     setWordValue(word, id) {
         const wordElement = document.getElementById(id);
-        wordElement.innerText = word
+        wordElement.innerText = word;
     }
 
     /**
@@ -149,13 +149,13 @@ export class OnePicOneWord {
      * Makes the spanish section visible
      */
     showSpanishWord() {
-        this.spanishWord.classList.remove("hide-with-space")
+        this.spanishWord.classList.remove("hide-with-space");
     }
 
     /**
      * Makes the spanish section hidden
      */
     hideSpanishWord() {
-        this.spanishWord.classList.add("hide-with-space")
+        this.spanishWord.classList.add("hide-with-space");
     }
 }

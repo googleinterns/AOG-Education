@@ -9,11 +9,11 @@ const translation = require("./translation");
  * words that the image represents.
  */
 
- /**
-  * Fetches and image from unsplash and then analyses it to get
-  * words that the image represents.
-  * @param {*} onePic is true for one pic one word and false for one pic multiple words game
-  */
+/**
+ * Fetches and image from unsplash and then analyses it to get
+ * words that the image represents.
+ * @param {*} onePic is true for one pic one word and false for one pic multiple words game
+ */
 exports.imageAnalysis = async function imageAnalysis(onePic) {
     var unsplash;
 
@@ -30,7 +30,7 @@ exports.imageAnalysis = async function imageAnalysis(onePic) {
     const client = new vision.ImageAnnotatorClient();
     const [result] = await client.labelDetection(`${photoURL}`);
     const labels = result.labelAnnotations;
-    
+
     if (onePic) {
         const word = labels[0].description.toLowerCase();
         const wordTranslated = await translation

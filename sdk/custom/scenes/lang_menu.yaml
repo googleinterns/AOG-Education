@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 intentEvents:
-- handler:
-    webhookHandler: lang_start_vocab
-  intent: lang_start_vocab
-  transitionToScene: lang_vocab
-- handler:
-    webhookHandler: lang_instructions
-  intent: lang_instructions
-  transitionToScene: lang_menu
-- handler:
-    webhookHandler: 
-  intent: lang_start_one_pic
-  transitionToScene: lang_one_pic
-- handler:
-    webhookHandler: 
-  intent: lang_start_multiple_words
-  transitionToScene: lang_multiple_words
+    - handler:
+          webhookHandler: lang_start_vocab
+      intent: lang_start_vocab
+      transitionToScene: lang_vocab
+    - handler:
+          webhookHandler: lang_instructions
+      intent: lang_instructions
+      transitionToScene: lang_menu
+    - handler:
+          webhookHandler:
+      intent: lang_start_one_pic
+      transitionToScene: lang_one_pic
+    - handler:
+          webhookHandler:
+      intent: lang_start_multiple_words
+      transitionToScene: lang_multiple_words

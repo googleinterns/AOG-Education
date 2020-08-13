@@ -15,14 +15,13 @@
  */
 
 export class OnePicMultipleWords {
-    
     questionContainer = document.createElement("div");
     wordsTable = document.createElement("table");
     wordsTableBody = document.createElement("tbody");
 
     image = document.createElement("img");
     buttonRow = document.createElement("div");
-    attemptsData = document.createElement("td")
+    attemptsData = document.createElement("td");
 
     constructor() {
         this.questionContainer.classList.add("container", "h-100", "w-100");
@@ -37,12 +36,17 @@ export class OnePicMultipleWords {
             "align-items-center"
         );
 
-        this.wordsTable.classList.add("table", "table-bordered", "table-dark", "pic-table");
+        this.wordsTable.classList.add(
+            "table",
+            "table-bordered",
+            "table-dark",
+            "pic-table"
+        );
 
         const tableHead = document.createElement("thead");
         const questionTitle = document.createElement("th");
         questionTitle.innerText = "One Pic Multiple Words";
-        questionTitle.setAttribute("colspan", "2")
+        questionTitle.setAttribute("colspan", "2");
         questionTitle.classList.add("text-center", "game-heading");
         tableHead.appendChild(questionTitle);
         this.wordsTable.appendChild(tableHead);
@@ -60,7 +64,7 @@ export class OnePicMultipleWords {
         buttonData.appendChild(nextQuestionButton);
         this.buttonRow.appendChild(this.attemptsData);
         this.buttonRow.appendChild(buttonData);
-        this.wordsTable.appendChild(this.buttonRow)
+        this.wordsTable.appendChild(this.buttonRow);
 
         titleSection.append(this.wordsTable);
         this.questionContainer.appendChild(titleSection);
@@ -71,7 +75,7 @@ export class OnePicMultipleWords {
      * @param {*} attempts left over
      */
     setAttempts(attempts) {
-        this.attemptsData.innerText = `${attempts} attempts left`
+        this.attemptsData.innerText = `${attempts} attempts left`;
     }
 
     /**
@@ -79,11 +83,11 @@ export class OnePicMultipleWords {
      * @param {*} url of image
      */
     setImageURL(url) {
-        this.wordsTableBody.innerHTML = ""
+        this.wordsTableBody.innerHTML = "";
         const imageRow = document.createElement("tr");
         const imageData = document.createElement("td");
         imageData.setAttribute("align", "center");
-        imageData.setAttribute("rowspan", "9"); 
+        imageData.setAttribute("rowspan", "9");
 
         this.image.src = url;
         imageData.appendChild(this.image);
@@ -107,8 +111,10 @@ export class OnePicMultipleWords {
      * @param {*} index of the word
      */
     setWord(word, language, index) {
-        const wordElement = document.getElementById(`${language}-word-${index}`)
-        wordElement.innerText = word
+        const wordElement = document.getElementById(
+            `${language}-word-${index}`
+        );
+        wordElement.innerText = word;
     }
 
     /**
@@ -142,9 +148,9 @@ export class OnePicMultipleWords {
                 }
             }
             wordElement.innerHTML = dashedWord;
-            wordElement.id = `${String(heading).toLowerCase()}-word-${i}`
+            wordElement.id = `${String(heading).toLowerCase()}-word-${i}`;
 
-            tableRow.appendChild(wordElement)
+            tableRow.appendChild(wordElement);
             element.appendChild(tableRow);
         }
     }
@@ -161,19 +167,19 @@ export class OnePicMultipleWords {
      */
     showSpanishWords() {
         const spanishWords = document.getElementsByClassName("spanish");
-        for(var i = 0; i < spanishWords.length; i++) {
+        for (var i = 0; i < spanishWords.length; i++) {
             spanishWords[i].classList.remove("hide-with-space");
-        } 
+        }
     }
 
     /**
      * Makes the spanish section hidden
      */
-    show
+    show;
     hideSpanishWords() {
         const spanishWords = document.getElementsByClassName("spanish");
-        for(var i = 0; i < spanishWords.length; i++) {
+        for (var i = 0; i < spanishWords.length; i++) {
             spanishWords[i].classList.add("hide-with-space");
-        } 
+        }
     }
 }

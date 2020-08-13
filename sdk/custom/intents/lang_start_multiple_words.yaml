@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 trainingPhrases:
-- start one pic multiple words
-- start one pic multiple words game
-- one pic multiple words
-- game 2
-- game two
+    - start one pic multiple words
+    - start one pic multiple words game
+    - one pic multiple words
+    - game 2
+    - game two
