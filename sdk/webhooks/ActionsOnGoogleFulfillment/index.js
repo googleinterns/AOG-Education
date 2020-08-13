@@ -73,14 +73,6 @@ app.handle("aog_main_menu_selection", (conv) => {
   }
 
   if (selection == "reading") {
-
-    //Logic that used to be in the local version of the Reading action's Play Game Intent.
-    conv.add("Welcome to Reading with the Google Assistant!");
-    conv.add(
-      new Canvas({
-        url: "https://reading-dc6dd.web.app",
-      })
-    );
     conv.scene.next.name = "READ_LIBRARY";
   }
 });

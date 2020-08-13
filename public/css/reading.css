@@ -1,6 +1,6 @@
 /*Library Class Styling below*/
 #libraryContainer{
-    height: 100%;
+    height: 100vh;
     border: 3px solid black;
 }
 

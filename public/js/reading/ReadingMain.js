@@ -4,7 +4,7 @@ import {Text} from './components/Text.js';
  * Represent Home scene
  */
 
-export class Reading{
+export class ReadingMain{
   /**
    * Initializes the game with visual components.
    */
@@ -22,6 +22,9 @@ export class Reading{
     this.view.appendChild(this.library.getLibrary());
     this.view.appendChild(this.text.getText());
     this.openLibrary();
+
+    let body = document.getElementsByTagName("BODY")[0];
+    body.setAttribute("style", "");
   }
 
   openText(){

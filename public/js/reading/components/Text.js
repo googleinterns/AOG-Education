@@ -23,7 +23,7 @@ export class Text{
 
     highlight(){
         let luminator = lumin(this.textContainer);
-        luminator.start(6000);
+        luminator.start(this.text.innerText.length* 50);
         this.textContainer.lastChild.setAttribute("style", "position: relative");
         this.textContainer.lastChild.lastChild.setAttribute("style", "display: flex");
     }

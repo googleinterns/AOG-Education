@@ -2,7 +2,7 @@ import { AogMainMenu } from "./global/aog-main-menu.js";
 import { GeographyMain } from "./geography/geography-main.js";
 import { GeographyMap } from "./geography/geography-map.js";
 import { LanguageMain } from "./language/language-main.js";
-import { ReadingMain } from "./reading/reading-main.js";
+import { ReadingMain } from "./reading/ReadingMain.js";
 
 export class Scene {
     menu = new AogMainMenu();
