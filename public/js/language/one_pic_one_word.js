@@ -15,90 +15,147 @@
  */
 
 export class OnePicOneWord {
-    /**
-     * Initializes the game with visual components.
-     */
-
+    
     questionContainer = document.createElement("div");
+    wordsTable = document.createElement("table");
+    wordsTableBody = document.createElement("tbody");
+
     englishWord = document.createElement("h4");
     spanishWord = document.createElement("h4");
     image = document.createElement("img");
     buttonRow = document.createElement("div");
+    attemptsData = document.createElement("td")
 
     constructor() {
-        this.questionContainer.classList.add("container", "h-100", "w-100");
-        this.questionContainer.id = "one-pic-one-word";
+        this.questionContainer.classList.add(
+            "container",
+            "h-100",
+            "w-100"
+        );
+        this.questionContainer.id = "one-pic-one-word"
 
-        const questionRow = document.createElement("div");
-        questionRow.classList.add(
+        const titleSection = document.createElement("div");
+        titleSection.classList.add(
+            "col-12",
             "row",
             "h-100",
             "justify-content-center",
             "align-items-center"
         );
 
-        const titleSection = document.createElement("div");
-        titleSection.classList.add("col-5");
+        this.wordsTable.classList.add("table", "table-bordered", "table-dark", "pic-table");
 
-        const pictureSection = document.createElement("div");
-        pictureSection.classList.add("col-7", "text-center");
+        const tableHead = document.createElement("thead");
+        const questionTitle = document.createElement("th");
+        questionTitle.innerText = "One Pic One Word";
+        questionTitle.setAttribute("colspan", "2")
+        questionTitle.classList.add("text-center", "game-heading");
+        tableHead.appendChild(questionTitle);
+        this.wordsTable.appendChild(tableHead);
+        this.wordsTable.appendChild(this.wordsTableBody);
 
-        const questionTitle = document.createElement("h1");
-        questionTitle.innerText = "1 Pic 1 Word";
-        questionTitle.classList.add("right-align");
+        this.buttonRow = document.createElement("tr");
+        const buttonData = document.createElement("td");
+        this.buttonRow.classList.add("text-center");
 
-        this.englishWord.classList.add("right-align");
-        this.spanishWord.classList.add("right-align");
-
-        this.image.classList.add("question-image");
-
-        this.buttonRow = document.createElement("div");
-        this.buttonRow.classList.add("right-align");
         const nextQuestionButton = document.createElement("button");
         nextQuestionButton.setAttribute("type", "button");
-        nextQuestionButton.classList.add("btn", "btn-primary", "next-question");
+        nextQuestionButton.classList.add("btn", "btn-primary");
         nextQuestionButton.innerText = "Next Question";
-        this.buttonRow.appendChild(nextQuestionButton);
+        
+        buttonData.appendChild(nextQuestionButton);
+        this.buttonRow.appendChild(this.attemptsData);
+        this.buttonRow.appendChild(buttonData);
+        this.wordsTable.appendChild(this.buttonRow)
 
-        titleSection.append(questionTitle, this.englishWord, this.spanishWord);
-        pictureSection.append(this.image, this.buttonRow);
-        questionRow.append(titleSection, pictureSection);
-        this.questionContainer.appendChild(questionRow);
+        titleSection.append(this.wordsTable);
+        this.questionContainer.appendChild(titleSection);
     }
 
     /**
-     * Sets the image source to the url
-     * @param {*} url of the image to be shown
+     * Sets the number of attempts left over
+     * @param {*} attempts left over
+     */
+    setAttempts(attempts) {
+        this.attemptsData.innerText = `${attempts} attempts left`
+    }
+
+    /**
+     * Sets the image inside of the table
+     * @param {*} url of image
      */
     setImageURL(url) {
+        this.wordsTableBody.innerHTML = ""
+        const imageRow = document.createElement("tr");
+        const imageData = document.createElement("td");
+        imageData.setAttribute("colspan", "2")
+        imageData.setAttribute("align", "center");
+
         this.image.src = url;
+        imageData.appendChild(this.image);
+        imageRow.appendChild(imageData);
+        this.wordsTableBody.appendChild(imageRow);
     }
 
     /**
-     * Sets the english word to shown to the user
-     * @param {*} word to be guessed
+     * Sets the hidden english/spanish word in the table
+     * @param {*} word that is hidden to the user (word to be guessed)
+     * @param {*} language which the word is in
      */
-    setWord(word) {
-        this.englishWord.innerText = word;
+    setWord(word, language) {
+        const tableHead = document.createElement("tr");
+        var headingElement = document.createElement("th");
+
+        headingElement.classList.add("text-center");
+        headingElement.innerText = language;
+
+        tableHead.appendChild(headingElement);
+        this.wordsTableBody.appendChild(tableHead);
+
+        var wordElement = document.createElement("td");
+        var dashedWord = `${word} : `;
+        for (var i = 0; i < word.length; i++) {
+            if (word.charAt(i) == " ") {
+                dashedWord += "&nbsp&nbsp&nbsp&nbsp";
+            } else {
+                dashedWord += "_ ";
+            }
+        }
+        wordElement.innerHTML = dashedWord;
+        wordElement.id = `${String(language).toLowerCase()}-word`
+
+        tableHead.appendChild(wordElement)
+        this.wordsTableBody.appendChild(tableHead);
     }
 
     /**
-     * Sets the spanish word to shown to the user
-     * @param {*} word to be guessed
+     * Makes the word visible to the user
+     * @param {*} word that should be shown to the user
+     * @param {*} id of the word
      */
-    setSpanishWord(word) {
-        this.spanishWord.innerText = word;
+    setWordValue(word, id) {
+        const wordElement = document.getElementById(id);
+        wordElement.innerText = word
     }
 
-    getOnePicOneWordQuestion() {
+    /**
+     * Returns the game session container
+     */
+    getQuestion() {
         return this.questionContainer;
     }
 
+    /**
+     * Makes the spanish section visible
+     */
     showSpanishWord() {
-        this.spanishWord.classList.remove("hide");
+        this.spanishWord.classList.remove("hide-with-space")
     }
 
+    /**
+     * Makes the spanish section hidden
+     */
     hideSpanishWord() {
-        this.spanishWord.classList.add("hide");
+        this.spanishWord.classList.add("hide-with-space")
     }
 }

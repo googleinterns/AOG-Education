@@ -23,16 +23,37 @@ export class Action {
             // AOG Education Geography Commands
             // AOG Education Language Commands
             LANG_MENU: (data) => {
-                this.scene.langOpenLanguageMenu();
+                this.scene.langOpenLanguageMenu(data.value);
             },
             LANG_START_ONE_PIC: (data) => {
-                this.scene.langStartOnePicOneWord(data);
+                this.scene.startOnePicOneWord(data.value);
             },
             LANG_ONE_PIC_SHOW_ENGLISH: (data) => {
-                this.scene.langOnePicOneWordShowEnglish(data);
+                this.scene.onePicOneWordShowEnglish(data.value);
             },
             LANG_ONE_PIC_SHOW_SPANISH: (data) => {
-                this.scene.langOnePicOneWordShowSpanish(data);
+                this.scene.onePicOneWordShowSpanish(data.value);
+            },
+            LANG_ONE_PIC_UPDATE_ATTEMPTS: (data) => {
+                this.scene.updateOnePicAttempts(data.value);
+            },
+            LANG_ONE_PIC_SHOW_ANSWER: (data) => {
+                this.scene.showOnePicAnswer(data.value);
+            },
+            LANG_START_MULTIPLE_WORDS: (data) => {
+                this.scene.startOnePicMultipleWords(data.value);
+            },
+            LANG_MULTIPLE_WORDS_SHOW_ENGLISH: (data) => {
+                this.scene.onePicMultipleWordShowEnglish(data.value);
+            },
+            LANG_MULTIPLE_WORDS_SHOW_SPANISH: (data) => {
+                this.scene.onePicMultipleWordShowSpanish(data.value);
+            },
+            LANG_MULTIPLE_WORDS_UPDATE_ATTEMPTS: (data) => {
+                this.scene.updateMultipleWordsAttempts(data.value);
+            },
+            LANG_MULTIPLE_WORDS_SHOW_ANSWER: (data) => {
+                this.scene.showMultipleWordsAnswer(data.value);
             },
             // AOG Education Reading Commands
         };
@@ -40,8 +61,12 @@ export class Action {
         // AOG Education Geography Commands
         // AOG Education Language Commands
         this.commands.LANG_START_ONE_PIC.bind(this);
+        this.commands.LANG_ONE_PIC_UPDATE_ATTEMPTS.bind(this);
+        this.commands.LANG_START_MULTIPLE_WORDS.bind(this);
         this.commands.LANG_ONE_PIC_SHOW_ENGLISH.bind(this);
+        this.commands.LANG_MULTIPLE_WORDS_SHOW_ENGLISH.bind(this);
         this.commands.LANG_ONE_PIC_SHOW_SPANISH.bind(this);
+        this.commands.LANG_MULTIPLE_WORDS_SHOW_SPANISH.bind(this);
         this.commands.LANG_MENU.bind(this);
         // AOG Education Reading Commands
     }

@@ -1,7 +1,4 @@
-/**
- * TODO(developer): Uncomment the following line before running the sample.
- */
-const projectId = "gaurnett-aog-game-e3c26";
+const projectId = "step-capstone";
 
 // Imports the Google Cloud client library
 const { Translate } = require("@google-cloud/translate").v2;
@@ -17,8 +14,7 @@ exports.translateFunction = async function (word) {
     // The target language
     const target = "es";
 
-    // Translates some text into Russian
+    // Translates some text into Spanish
     const [translation] = await translate.translate(word, target);
-
     return translation;
 };
