@@ -4,10 +4,10 @@ intentEvents:
       intent: lang_change_game
       transitionToScene: lang_menu
     - handler:
-          webhookHandler: lang_one_pic_word_translation
-      intent: lang_one_pic_word_translation
+          webhookHandler: lang_one_pic_answer_translation
+      intent: lang_word
       transitionToScene: lang_one_pic_translation
     - handler:
-          webhookHandler: lang_one_pic_next_question
-      intent: lang_one_pic_next_question
+          webhookHandler: lang_next_question
+      intent: lang_next_question
       transitionToScene: lang_one_pic

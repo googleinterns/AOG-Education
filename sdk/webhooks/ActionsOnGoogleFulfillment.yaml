@@ -8,26 +8,30 @@ handlers:
     - name: lang_instructions
     - name: lang_fallback
     - name: lang_start_one_pic
+    - name: lang_start_multiple_words
     - name: lang_start_vocab
-    - name: lang_one_pic_word
-    - name: lang_one_pic_word_translation
-    - name: lang_one_pic_next_question
+    - name: lang_one_pic_answer
+    - name: lang_multiple_words_answer
+    - name: lang_one_pic_answer_translation
+    - name: lang_multiple_words_answer_translation
+    - name: lang_next_question
     - name: lang_change_game
     # Geography Section
-    - name: geo_setup
-    - name: geo_askUSCapitalQuestion
-    - name: geo_askWorldCapitalQuestion
-    - name: geo_askStateQuestion
-    - name: geo_askCountryQuestion
-    - name: geo_checkAnswer
-    - name: geo_viewResults
+    - name: geo_us_capital
+    - name: geo_world_capital
+    - name: geo_state
+    - name: geo_country
+    - name: geo_check_answer
+    - name: geo_results
     # Reading Section
-    - name: read_welcome
     - name: read_fallback
     - name: read_bookSelected
     - name: read_analyseUserInput
     - name: read_openLibrary
     - name: read_nextChunk
     - name: read_restartBook
+
 httpsEndpoint:
-    baseUrl: "https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment"
+    baseUrl: https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment
+# inlineCloudFunction:
+#     executeFunction: ActionsOnGoogleFulfillment

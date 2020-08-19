@@ -22,25 +22,55 @@ export class Action {
       },
 
       // AOG Education Geography Commands
-      LOAD_STATE_MAP: (data) => {
-        this.scene.loadStateMap(data);
+      GEO_MENU: (data) => {
+        this.scene.geoMenu(data);
       },
-      LOAD_COUNTRY_MAP: (data) => {
-        this.scene.loadCountryMap(data);
+      GEO_CAPITAL: (data) => {
+        this.scene.geoCapital(data);
+      },
+      GEO_LOAD_STATE_MAP: (data) => {
+        this.scene.geoLoadStateMap(data);
+      },
+      GEO_LOAD_COUNTRY_MAP: (data) => {
+        this.scene.geoLoadCountryMap(data);
+      },
+      GEO_SHOW_RESULTS: (data) => {
+        this.scene.geoShowResults(data);
       },
 
       // AOG Education Language Commands
       LANG_MENU: (data) => {
-        this.scene.langOpenLanguageMenu();
+        this.scene.langOpenLanguageMenu(data.value);
       },
       LANG_START_ONE_PIC: (data) => {
-        this.scene.langStartOnePicOneWord(data);
+        this.scene.startOnePicOneWord(data.value);
       },
       LANG_ONE_PIC_SHOW_ENGLISH: (data) => {
-        this.scene.langOnePicOneWordShowEnglish(data);
+        this.scene.onePicOneWordShowEnglish(data.value);
       },
       LANG_ONE_PIC_SHOW_SPANISH: (data) => {
-        this.scene.langOnePicOneWordShowSpanish(data);
+        this.scene.onePicOneWordShowSpanish(data.value);
+      },
+      LANG_ONE_PIC_UPDATE_ATTEMPTS: (data) => {
+        this.scene.updateOnePicAttempts(data.value);
+      },
+      LANG_ONE_PIC_SHOW_ANSWER: (data) => {
+        this.scene.showOnePicAnswer(data.value);
+      },
+      LANG_START_MULTIPLE_WORDS: (data) => {
+        this.scene.startOnePicMultipleWords(data.value);
+      },
+      LANG_MULTIPLE_WORDS_SHOW_ENGLISH: (data) => {
+        this.scene.onePicMultipleWordShowEnglish(data.value);
+      },
+      LANG_MULTIPLE_WORDS_SHOW_SPANISH: (data) => {
+        this.scene.onePicMultipleWordShowSpanish(data.value);
+      },
+      LANG_MULTIPLE_WORDS_UPDATE_ATTEMPTS: (data) => {
+        this.scene.updateMultipleWordsAttempts(data.value);
+      },
+      LANG_MULTIPLE_WORDS_SHOW_ANSWER: (data) => {
+        this.scene.showMultipleWordsAnswer(data.value);
       },
 
       ///////////////////////////////////////////
@@ -64,15 +94,25 @@ export class Action {
       READ_TEXT_FEEDBACK: (data) => {
         this.scene.reading.getText().setRanges(data.ranges);
         this.scene.reading.getText().setWords(data.words);
-      }
-
+      },
     };
     this.commands.AOG_MAIN_MENU_SELECTION.bind(this);
 
+    // AOG Education Geography Commands
+    this.commands.GEO_MENU.bind(this);
+    this.commands.GEO_CAPITAL.bind(this);
+    this.commands.GEO_LOAD_COUNTRY_MAP.bind(this);
+    this.commands.GEO_LOAD_STATE_MAP.bind(this);
+    this.commands.GEO_SHOW_RESULTS.bind(this);
+
     // AOG Education Language Commands
     this.commands.LANG_START_ONE_PIC.bind(this);
+    this.commands.LANG_ONE_PIC_UPDATE_ATTEMPTS.bind(this);
+    this.commands.LANG_START_MULTIPLE_WORDS.bind(this);
     this.commands.LANG_ONE_PIC_SHOW_ENGLISH.bind(this);
+    this.commands.LANG_MULTIPLE_WORDS_SHOW_ENGLISH.bind(this);
     this.commands.LANG_ONE_PIC_SHOW_SPANISH.bind(this);
+    this.commands.LANG_MULTIPLE_WORDS_SHOW_SPANISH.bind(this);
     this.commands.LANG_MENU.bind(this);
 
     // AOG Education Reading Commands
@@ -81,10 +121,6 @@ export class Action {
     this.commands.READ_CHANGE_TEXT.bind(this);
     this.commands.READ_OPEN_LIBRARY.bind(this);
     this.commands.READ_TEXT_FEEDBACK.bind(this);
-
-    // Bind AOG Education Geography Commands
-    this.commands.LOAD_COUNTRY_MAP.bind(this);
-    this.commands.LOAD_STATE_MAP.bind(this);
   }
 
   /**
@@ -109,10 +145,11 @@ export class Action {
           this.scene.reading.getText().clearHighlights();
           await this.canvas.sendTextQuery("Go next"); //move to next page once assistant is done reading
         }
-        if (markName ==='OK') { //begining of assistants speech
+        if (markName === "OK") {
+          //begining of assistants speech
           this.scene.reading.getText().startHighlighting();
         }
-      }
+      },
     };
     callbacks.onUpdate.bind(this);
     // called by the Interactive Canvas web app once web app has loaded to

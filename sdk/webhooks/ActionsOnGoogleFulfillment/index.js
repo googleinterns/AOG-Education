@@ -1,5 +1,8 @@
 const { conversation, Canvas } = require("@assistant/conversation");
 const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+admin.initializeApp();
+const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 
 const INSTRUCTIONS = "Hello user, This is AOG Education.";
 
@@ -55,6 +58,24 @@ app.handle("aog_main_menu_selection", (conv) => {
   }
 
   if (selection == "reading") {
+    let books = [];
+    let keys = Object.keys(database);
+    for (i in keys) {
+      let imgSrc = database[keys[i]]["Image"];
+      let title = keys[i];
+      let book = { imgSrc, title };
+      books.push(book);
+    }
+
+    conv.add("Welcome to Reading with the Google Assistant!");
+    conv.add(
+      new Canvas({
+        data: {
+          command: "WRITE_TO_LIBRARY",
+          books: books,
+        },
+      })
+    );
     conv.scene.next.name = "read_LIBRARY";
   }
 });
@@ -63,119 +84,135 @@ app.handle("aog_main_menu_selection", (conv) => {
  * GEOGRAPHY SECTION
  */
 
-// Load state and country data.
-const geo_statesFile = require("./geography/geo-states");
-const geo_stateCoordsFile = require("./geography/geo-stateCoords");
-const geo_countriesFile = require("./geography/geo-countries");
-let geo_states, geo_stateCoords, geo_countries;
-
-// Randomly generate a new state question.
-function getNewStateQuestion(conv) {
-  conv.session.params.geo_stateInd = parseInt(
-    Math.random() * Object.keys(geo_states).length
-  );
-  conv.session.params.geo_state =
-    geo_states[conv.session.params.geo_stateInd][0];
-  conv.session.params.geo_usCapital =
-    geo_states[conv.session.params.geo_stateInd][1];
-  conv.session.params.geo_numQuestionsLeft--;
-}
-
-// Randomly generate a new country question.
-function getNewCountryQuestion(conv) {
-  conv.session.params.geo_countryInd = parseInt(
-    Math.random() * Object.keys(geo_countries).length
-  );
-  conv.session.params.geo_country =
-    geo_countries[conv.session.params.geo_countryInd][0];
-  conv.session.params.geo_worldCapital =
-    geo_countries[conv.session.params.geo_countryInd][1];
-  conv.session.params.geo_numQuestionsLeft--;
-}
+// Load functions and state coordinates data.
+const geo_functions = require("./geography/functions");
+const geo_state_coords_file = require("./geography/state_coords");
+const geo_state_coords = geo_state_coords_file.stateCoords;
 
 app.handle("geo_setup", (conv) => {
-  geo_states = geo_statesFile.states;
-  geo_stateCoords = geo_stateCoordsFile.stateCoords;
-  geo_countries = geo_countriesFile.countries;
-  conv.session.params.geo_numQuestionsLeft = 10;
-  conv.session.params.geo_correct = 0;
-  conv.session.params.geo_incorrect = 0;
+  geo_functions.setup(conv);
+  conv.add(
+    "Choose a category - US Capitals, World Capitals, US States, or Countries."
+  );
+  conv.add(
+    new Canvas({
+      data: {
+        command: "GEO_MENU",
+      },
+    })
+  );
 });
 
-app.handle("geo_askUSCapitalQuestion", (conv) => {
-  conv.session.params.geo_category = "USCAPITALS";
-  getNewStateQuestion(conv);
-  conv.add(`What is the capital of ${conv.session.params.geo_state}?`);
+/**
+ * Ask US capital question.
+ */
+app.handle("geo_us_capital", (conv) => {
+  conv.session.params.geo_category = "US_CAPITAL";
+  geo_functions.getQuestion(conv);
+  conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
+  conv.add(
+    new Canvas({
+      data: {
+        command: "GEO_CAPITAL",
+        name: conv.session.params.geo_name,
+      },
+    })
+  );
 });
 
-app.handle("geo_askWorldCapitalQuestion", (conv) => {
-  conv.session.params.geo_category = "WORLDCAPITALS";
-  getNewCountryQuestion(conv);
-  conv.add(`What is the capital of ${conv.session.params.geo_country}?`);
+/**
+ * Ask world capital question.
+ */
+app.handle("geo_world_capital", (conv) => {
+  conv.session.params.geo_category = "WORLD_CAPITAL";
+  geo_functions.getQuestion(conv);
+  conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
+  conv.add(
+    new Canvas({
+      data: {
+        command: "GEO_CAPITAL",
+        name: conv.session.params.geo_name,
+      },
+    })
+  );
 });
 
-app.handle("geo_askStateQuestion", (conv) => {
-  conv.session.params.geo_category = "STATES";
-  getNewStateQuestion(conv);
+/**
+ * Ask US state question and load the state map in question.
+ */
+app.handle("geo_state", (conv) => {
+  conv.session.params.geo_category = "STATE";
+  geo_functions.getQuestion(conv);
   conv.add("What is the state pictured?");
   conv.add(
     new Canvas({
       data: {
-        command: "LOAD_STATE_MAP",
-        coords: geo_stateCoords[conv.session.params.geo_state],
+        command: "GEO_LOAD_STATE_MAP",
+        coords: geo_state_coords[conv.session.params.geo_name],
       },
     })
   );
 });
 
-app.handle("geo_askCountryQuestion", (conv) => {
-  conv.session.params.geo_category = "COUNTRIES";
-  getNewCountryQuestion(conv);
+/**
+ * Ask country question and load the country map in question.
+ */
+app.handle("geo_country", (conv) => {
+  conv.session.params.geo_category = "COUNTRY";
+  geo_functions.getQuestion(conv);
   conv.add("What is the country pictured?");
   conv.add(
     new Canvas({
       data: {
-        command: "LOAD_COUNTRY_MAP",
-        country: conv.session.params.geo_country,
-        region: geo_countries[conv.session.params.geo_countryInd][2],
+        command: "GEO_LOAD_COUNTRY_MAP",
+        country: conv.session.params.geo_name,
+        region: conv.session.params.geo_region,
       },
     })
   );
 });
 
-app.handle("geo_viewResults", (conv) => {
+/**
+ * Load results page displaying questions answered correctly and incorrectly.
+ */
+app.handle("geo_results", (conv) => {
   conv.add(
-    `You got ${conv.session.params.geo_correct} questions correct and ${conv.session.params.geo_incorrect} questions incorrect.`
+    new Canvas({
+      data: {
+        command: "GEO_SHOW_RESULTS",
+        correct: conv.session.params.geo_correct,
+        incorrect: conv.session.params.geo_incorrect,
+      },
+    })
   );
 });
 
-app.handle("geo_checkAnswer", (conv) => {
-  let correctAnswer;
-  if (conv.session.params.geo_category == "USCAPITALS") {
-    correctAnswer = conv.session.params.geo_usCapital;
-  } else if (conv.session.params.geo_category == "STATES") {
-    correctAnswer = conv.session.params.geo_state;
-  } else if (conv.session.params.geo_category == "COUNTRIES") {
-    correctAnswer = conv.session.params.geo_country;
-  } else if (conv.session.params.geo_category == "WORLDCAPITALS") {
-    correctAnswer = conv.session.params.geo_worldCapital;
-  }
+/**
+ * Check whether the answer is correct and display the corresponding message.
+ */
+app.handle("geo_check_answer", (conv) => {
+  const answer = geo_functions.getCorrectAnswer(conv);
 
-  if (
-    (conv.intent.params.answer &&
-      conv.intent.params.answer.resolved.includes(correctAnswer)) ||
-    (conv.session.params.geo_category == "USCAPITALS" &&
-      conv.session.params.geo_state == "Alaska" &&
-      conv.intent.params.answer.resolved.includes("Juno"))
-  ) {
-    conv.session.params.geo_correct++;
-    conv.add(`${correctAnswer} is correct!`);
-  } else {
-    conv.session.params.geo_incorrect++;
-    conv.add(
-      `Sorry, that's incorrect. The correct answer is ${correctAnswer}.`
+  // Store question as correct or incorrect based on user's last response.
+  if (conv.session.params.geo_correct.includes(answer)) {
+    geo_functions.removeElementByValue(conv.session.params.geo_correct, answer);
+  } else if (conv.session.params.geo_incorrect.includes(answer)) {
+    geo_functions.removeElementByValue(
+      conv.session.params.geo_incorrect,
+      answer
     );
   }
+
+  // Remove question from question bank if user answered correctly.
+  if (geo_functions.isCorrect(conv, answer)) {
+    conv.session.params.geo_correct.push(answer);
+    conv.add(`${answer} is correct!`);
+    geo_functions.removeQuestion(conv);
+  } else {
+    conv.session.params.geo_incorrect.push(answer);
+    conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
+  }
+  conv.add(new Canvas());
 });
 
 /**
@@ -191,6 +228,45 @@ const LANG_INSTRUCTIONS =
   "Hello user, you can open a new level or change questions.";
 
 /**
+ * Sets the Canvas for a webhook
+ * @param {*} conv brings the actions SDK to the webapp
+ * @param {*} convText is said to the user
+ * @param {*} command updates the UI in action.js
+ * @param {*} value that the UI should be updated to
+ */
+function langSetCanvas(conv, convText, command, value) {
+  if (String(convText).length > 0) conv.add(convText);
+
+  conv.add(
+    new Canvas({
+      data: {
+        command: command,
+        value: value,
+      },
+    })
+  );
+}
+
+/**
+ * Stores the translated word to firebase
+ * @param {*} userID of the user
+ * @param {*} englishWord to store
+ * @param {*} spanishWord to store
+ */
+function storeTranslatedWordsToFirebase(userID, englishWord, spanishWord) {
+  const firestoreUser = admin.firestore().doc(`AOGUsers/${userID}`);
+  firestoreUser.set(
+    {
+      TranslatedWords: admin.firestore.FieldValue.arrayUnion({
+        english: englishWord,
+        spanish: spanishWord,
+      }),
+    },
+    { merge: true }
+  );
+}
+
+/**
  * Welcomes the user to the language section of the app.
  */
 app.handle("lang_welcome", (conv) => {
@@ -200,7 +276,7 @@ app.handle("lang_welcome", (conv) => {
     return;
   }
   conv.add(
-    "Hi, Welcome to the AOG Education language section. Please choose a game from the menu below."
+    `Hi, ${conv.user.params.tokenPayload.given_name} Welcome to the AOG Education language section. Please choose a game from the menu below.`
   );
   conv.add(
     new Canvas({
@@ -221,38 +297,56 @@ app.handle("lang_fallback", (conv) => {
  * Handler to start the language one pic one word section
  */
 app.handle("lang_start_one_pic", (conv) => {
-  /* 
-    TODO: Uncomment when authentication has been added.
-
-    if (conv.user.params.startedOnePic == undefined || conv.user.params.startedOnePic == false) {
-        conv.add(`Ok, starting one pic one word`);
-        conv.add(`To play this game, please guess the english word shown by the picture.`);
-        conv.user.params.startedOnePic = true
-    }
-    */
-
-  if (langGameState.game_state.startedOnePic == false) {
+  if (
+    conv.session.params.startedOnePic == undefined ||
+    conv.session.params.startedOnePic == false
+  ) {
     conv.add(`Ok, starting one pic one word`);
     conv.add(
       `To play this game, please guess the english word shown by the picture.`
     );
-    langGameState.game_state.startedOnePic = true;
+    conv.session.params.startedOnePic = true;
   }
 
   return imageAnalysis
-    .imageAnalysis()
+    .imageAnalysis(true)
     .then((value) => {
-      // TODO: Uncomment when authentication has been added
-      // conv.user.params.onePicAnswer = value.word
-      langGameState.game_state.onePicAnswer = value.word;
-      conv.add(
-        new Canvas({
-          data: {
-            command: "LANG_START_ONE_PIC",
-            analysis: value,
-          },
-        })
-      );
+      value.attempts = 5;
+      conv.session.params.onePicAnswer = value.word;
+      conv.session.params.onePicAnswerTranslated = value.wordTranslated;
+      conv.session.params.onePicAttemptsLeft = value.attempts;
+      langSetCanvas(conv, "", "LANG_START_ONE_PIC", value);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+/**
+ * Handler to start the language one pic multiple words section
+ */
+app.handle("lang_start_multiple_words", (conv) => {
+  conv.session.params.englishWordsGuessed = 0;
+  conv.session.params.spanishWordsGuessed = 0;
+  if (
+    conv.session.params.startedMultipleWords == undefined ||
+    conv.session.params.startedMultipleWords == false
+  ) {
+    conv.add(`Ok, starting one pic multiple word`);
+    conv.add(
+      `To play this game, please guess several english words shown by the picture.`
+    );
+    conv.session.params.startedMultipleWords = true;
+  }
+
+  return imageAnalysis
+    .imageAnalysis(false)
+    .then((value) => {
+      value.attempts = 5;
+      conv.session.params.multipleWordsAnswer = value.words;
+      conv.session.params.multipleWordsAnswerTranslated = value.wordsTranslated;
+      conv.session.params.multipleWordsAttemptsLeft = value.attempts;
+      langSetCanvas(conv, "", "LANG_START_MULTIPLE_WORDS", value);
     })
     .catch((error) => {
       console.log(error);
@@ -262,29 +356,120 @@ app.handle("lang_start_one_pic", (conv) => {
 /**
  * Handler to manage the word the user guesses
  */
-app.handle("lang_one_pic_word", (conv) => {
-  const word = conv.intent.params.word
-    ? conv.intent.params.word.resolved
+app.handle("lang_one_pic_answer", async (conv) => {
+  const word = conv.intent.params.lang_words
+    ? conv.intent.params.lang_words.resolved
+    : null;
+
+  console.log("Intent = " + String(conv.intent.params));
+  conv.add(`Ok, let's see if ${word} is correct`);
+
+  const userAnswer = String(word);
+  const correctAnswer = conv.session.params.onePicAnswer;
+
+  if (userAnswer.toLowerCase() == correctAnswer) {
+    const convText = `That is correct! Try translating it to spanish`;
+    const value = {
+      word: correctAnswer,
+      spanish: conv.session.params.onePicAnswerTranslated,
+    };
+    langSetCanvas(conv, convText, "LANG_ONE_PIC_SHOW_ENGLISH", value);
+    conv.scene.next.name = "lang_one_pic_translation";
+  } else {
+    conv.session.params.onePicAttemptsLeft--;
+
+    if (conv.session.params.onePicAttemptsLeft == 0) {
+      const convText = `You have ran out of attempts. The correct answers are shown below.`;
+      const value = {
+        english: conv.session.params.onePicAnswer,
+        spanish: conv.session.params.onePicAnswerTranslated,
+      };
+      langSetCanvas(conv, convText, "LANG_ONE_PIC_SHOW_ANSWER", value);
+    } else {
+      const convText = `That is incorrect! Try again.`;
+      langSetCanvas(
+        conv,
+        convText,
+        "LANG_ONE_PIC_UPDATE_ATTEMPTS",
+        conv.session.params.onePicAttemptsLeft
+      );
+    }
+  }
+});
+
+/**
+ * Handler to manage the word the user guesses
+ */
+app.handle("lang_multiple_words_answer", async (conv) => {
+  const word = conv.intent.params.lang_words
+    ? conv.intent.params.lang_words.resolved
+    : null;
+
+  console.log("Intent = " + String(conv.intent.params));
+  conv.add(`Ok, let's see if ${word} is correct`);
+
+  const userAnswer = String(word);
+  const correctAnswers = Array.from(conv.session.params.multipleWordsAnswer);
+
+  const wordIndex = correctAnswers.indexOf(userAnswer);
+
+  if (wordIndex > -1) {
+    conv.session.params.englishWordsGuessed++;
+    if (conv.session.params.englishWordsGuessed == correctAnswers.length) {
+      conv.add("Sweet! Try translating these words to spanish");
+      conv.scene.next.name = "lang_multiple_words_translation";
+    } else {
+      conv.add(`That is a correct word`);
+    }
+    let value = {
+      word: correctAnswers[wordIndex],
+      index: wordIndex,
+      showSpanish:
+        conv.session.params.englishWordsGuessed == correctAnswers.length,
+      spanishWords: conv.session.params.multipleWordsAnswerTranslated,
+    };
+    langSetCanvas(conv, "", "LANG_MULTIPLE_WORDS_SHOW_ENGLISH", value);
+  } else {
+    conv.session.params.multipleWordsAttemptsLeft--;
+
+    if (conv.session.params.multipleWordsAttemptsLeft == 0) {
+      const convText = `You have ran out of attempts. The correct answers are shown below.`;
+      const value = {
+        english: conv.session.params.multipleWordsAnswer,
+        spanish: conv.session.params.multipleWordsAnswerTranslated,
+      };
+      langSetCanvas(conv, convText, "LANG_MULTIPLE_WORDS_SHOW_ANSWER", value);
+    } else {
+      const convText = `That is incorrect! Try again.`;
+      langSetCanvas(
+        conv,
+        convText,
+        "LANG_MULTIPLE_WORDS_UPDATE_ATTEMPTS",
+        conv.session.params.multipleWordsAttemptsLeft
+      );
+    }
+  }
+});
+
+/**
+ * Handler to manage to spanish input from the user
+ */
+app.handle("lang_one_pic_answer_translation", (conv) => {
+  const word = conv.intent.params.lang_words
+    ? conv.intent.params.lang_words.resolved
     : null;
 
   conv.add(`Ok, let's see if ${word} is correct`);
 
-  // TODO: Uncomment when authentication has been added
-  // const correctAnswer = conv.user.params.onePicAnswer;
-  const correctAnswer = langGameState.game_state.onePicAnswer;
   const userAnswer = String(word);
+  const userID = conv.user.params.uid;
+  const englishAnswer = conv.session.params.onePicAnswer;
 
-  if (userAnswer.toLowerCase() == correctAnswer.toLowerCase()) {
-    conv.add(`That is correct! Try translating it to spanish`);
-    conv.add(
-      new Canvas({
-        data: {
-          command: "LANG_ONE_PIC_SHOW_ENGLISH",
-          word: correctAnswer,
-        },
-      })
-    );
-    conv.scene.next.name = "lang_one_pic_translation";
+  const spanishAnswer = conv.session.params.onePicAnswerTranslated;
+  if (userAnswer.toLowerCase() == spanishAnswer) {
+    const convText = `That is correct! You can say "Next Question" to see something else or "Questions" to go back to the main menu.`;
+    langSetCanvas(conv, convText, "LANG_ONE_PIC_SHOW_SPANISH", spanishAnswer);
+    storeTranslatedWordsToFirebase(userID, englishAnswer, spanishAnswer);
   } else {
     conv.add(`That is incorrect! Try again.`);
     conv.add(new Canvas());
@@ -294,68 +479,90 @@ app.handle("lang_one_pic_word", (conv) => {
 /**
  * Handler to manage to spanish input from the user
  */
-app.handle("lang_one_pic_word_translation", (conv) => {
-  const word = conv.intent.params.word
-    ? conv.intent.params.word.resolved
+app.handle("lang_multiple_words_answer_translation", (conv) => {
+  const word = conv.intent.params.lang_words
+    ? conv.intent.params.lang_words.resolved
     : null;
 
   conv.add(`Ok, let's see if ${word} is correct`);
-  // TODO: Uncomment when authentication has been added
-  // const correctAnswer = conv.user.params.onePicAnswer;
-  const correctAnswer = langGameState.game_state.onePicAnswer;
-  return translation
-    .translateFunction(correctAnswer)
-    .then((value) => {
-      const userAnswer = String(word);
-      if (userAnswer.toLowerCase() == value.toLowerCase()) {
-        conv.add(
-          `That is correct! You can say "Next Question" to see something else or "Questions" to go back to the main menu.`
-        );
-        conv.add(
-          new Canvas({
-            data: {
-              command: "LANG_ONE_PIC_SHOW_SPANISH",
-              word: value,
-            },
-          })
-        );
-      } else {
-        conv.add(`That is incorrect! Try again.`);
-        conv.add(new Canvas());
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+
+  const userAnswer = String(word);
+  const userID = conv.user.params.uid;
+  const englishAnswer = conv.session.params.onePicAnswer;
+
+  const spanishAnswers = Array.from(
+    conv.session.params.multipleWordsAnswerTranslated
+  );
+  const englishAnswers = Array.from(conv.session.params.multipleWordsAnswer);
+  const wordIndex = spanishAnswers.indexOf(userAnswer);
+
+  if (wordIndex > -1) {
+    conv.session.params.spanishWordsGuessed++;
+    if (conv.session.params.spanishWordsGuessed == spanishAnswers.length) {
+      conv.add(
+        `You've got them all! You can say "Next Question" to see something else or "Questions" to go back to the main menu.`
+      );
+    } else {
+      conv.add(`That is a correct word`);
+    }
+
+    const value = {
+      word: spanishAnswers[wordIndex],
+      index: wordIndex,
+    };
+    langSetCanvas(conv, "", "LANG_MULTIPLE_WORDS_SHOW_SPANISH", value);
+    storeTranslatedWordsToFirebase(
+      userID,
+      englishAnswers[wordIndex],
+      spanishAnswers[wordIndex]
+    );
+  } else {
+    conv.add(`That is incorrect! Try again.`);
+    conv.add(new Canvas());
+  }
 });
 
 /**
  * Handler to start the next question
  */
-app.handle("lang_one_pic_next_question", (conv) => {
+app.handle("lang_next_question", (conv) => {
   conv.add(`Ok, starting next question`);
-  conv.scene.next.name = "lang_one_pic";
+  if (
+    conv.scene.name == "lang_one_pic" ||
+    conv.scene.name == "lang_one_pic_translation"
+  ) {
+    conv.scene.next.name = "lang_one_pic";
+  } else if (
+    conv.scene.name == "lang_multiple_words" ||
+    conv.scene.name == "lang_multiple_words_translation"
+  ) {
+    conv.scene.next.name = "lang_multiple_words";
+  }
 });
 
 /**
  * Handler to return to the main menu
  */
 app.handle("lang_change_game", (conv) => {
-  // TODO: Uncomment when authentication has been added
-  // conv.user.params.startedOnePic = false
-  langGameState.game_state.startedOnePic = false;
-  conv.add(`Ok, opening questions.`);
-  conv.add(
-    new Canvas({
-      data: {
-        command: "LANG_MENU",
-      },
-    })
-  );
+  conv.add(`Ok, returning to the main menu.`);
+
+  if (
+    conv.scene.name == "lang_one_pic" ||
+    conv.scene.name == "lang_one_pic_translation"
+  ) {
+    conv.session.params.startedOnePic = false;
+  } else if (
+    conv.scene.name == "lang_multiple_words" ||
+    conv.scene.name == "lang_multiple_words_translation"
+  ) {
+    conv.session.params.startedMultipleWords = false;
+  }
+
+  langSetCanvas(conv, "", "LANG_MENU", conv.scene.name);
 });
 
 app.handle("lang_instructions", (conv) => {
-  conv.add(LANG_INSTRUCTIONS);
+  conv.add(INSTRUCTIONS);
   conv.add(new Canvas());
 });
 
@@ -374,34 +581,34 @@ app.handle("read_fallback", (conv) => {
 });
 
 app.handle("read_bookSelected", (conv) => {
-   //Selection of a book from the library scene
-   const bookTitle = toTitleCase(conv.session.params.bookTitle); //user input
+  //Selection of a book from the library scene
+  const bookTitle = toTitleCase(conv.session.params.bookTitle); //user input
 
-   if (
-     conv.user.params[bookTitle] == undefined ||
-     conv.user.params[bookTitle]["chunk"] == undefined
-   ) {
-     //define key value pair if it doesnt exist
-     conv.user.params[bookTitle] = {
-       chunk: 0,
-       size: database[bookTitle]["Text"].length,
-     };
-   }
- 
-   conv.user.params.currentBook = bookTitle;
- 
-   let text = getText(conv);
-   conv.add("Loading Book...");
-   conv.add(
-     new Canvas({
-       data: {
-         command: "READ_BOOK_SELECTED",
-         text: text,
-       },
-     })
-   );
- 
-   checkForchapter(conv, text);
+  if (
+    conv.user.params[bookTitle] == undefined ||
+    conv.user.params[bookTitle]["chunk"] == undefined
+  ) {
+    //define key value pair if it doesnt exist
+    conv.user.params[bookTitle] = {
+      chunk: 0,
+      size: database[bookTitle]["Text"].length,
+    };
+  }
+
+  conv.user.params.currentBook = bookTitle;
+
+  let text = getText(conv);
+  conv.add("Loading Book...");
+  conv.add(
+    new Canvas({
+      data: {
+        command: "READ_BOOK_SELECTED",
+        text: text,
+      },
+    })
+  );
+
+  checkForchapter(conv, text);
 });
 
 app.handle("read_analyseUserInput", (conv) => {

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-export class OnePicOneWord {
+export class OnePicMultipleWords {
     questionContainer = document.createElement("div");
     wordsTable = document.createElement("table");
     wordsTableBody = document.createElement("tbody");
 
-    englishWord = document.createElement("h4");
-    spanishWord = document.createElement("h4");
     image = document.createElement("img");
     buttonRow = document.createElement("div");
     attemptsData = document.createElement("td");
@@ -47,7 +45,7 @@ export class OnePicOneWord {
 
         const tableHead = document.createElement("thead");
         const questionTitle = document.createElement("th");
-        questionTitle.innerText = "One Pic One Word";
+        questionTitle.innerText = "One Pic Multiple Words";
         questionTitle.setAttribute("colspan", "2");
         questionTitle.classList.add("text-center", "game-heading");
         tableHead.appendChild(questionTitle);
@@ -88,8 +86,8 @@ export class OnePicOneWord {
         this.wordsTableBody.innerHTML = "";
         const imageRow = document.createElement("tr");
         const imageData = document.createElement("td");
-        imageData.setAttribute("colspan", "2");
         imageData.setAttribute("align", "center");
+        imageData.setAttribute("rowspan", "9");
 
         this.image.src = url;
         imageData.appendChild(this.image);
@@ -98,44 +96,63 @@ export class OnePicOneWord {
     }
 
     /**
-     * Sets the hidden english/spanish word in the table
-     * @param {*} word that is hidden to the user (word to be guessed)
-     * @param {*} language which the word is in
+     * Sets the hidden english/spanish words in the table
+     * @param {*} words that are hidden to the user (words to be guessed)
+     * @param {*} language which the words are in
      */
-    setWord(word, language) {
-        const tableHead = document.createElement("tr");
-        var headingElement = document.createElement("th");
-
-        headingElement.classList.add("text-center");
-        headingElement.innerText = language;
-
-        tableHead.appendChild(headingElement);
-        this.wordsTableBody.appendChild(tableHead);
-
-        var wordElement = document.createElement("td");
-        var dashedWord = `${word} : `;
-        for (var i = 0; i < word.length; i++) {
-            if (word.charAt(i) == " ") {
-                dashedWord += "&nbsp&nbsp&nbsp&nbsp";
-            } else {
-                dashedWord += "_ ";
-            }
-        }
-        wordElement.innerHTML = dashedWord;
-        wordElement.id = `${String(language).toLowerCase()}-word`;
-
-        tableHead.appendChild(wordElement);
-        this.wordsTableBody.appendChild(tableHead);
+    setWords(words, language) {
+        this.addWordsToContainer(words, language, this.wordsTableBody);
     }
 
     /**
      * Makes the word visible to the user
-     * @param {*} word that should be shown to the user
-     * @param {*} id of the word
+     * @param {*} word to be shown to the user
+     * @param {*} language of the word
+     * @param {*} index of the word
      */
-    setWordValue(word, id) {
-        const wordElement = document.getElementById(id);
+    setWord(word, language, index) {
+        const wordElement = document.getElementById(
+            `${language}-word-${index}`
+        );
         wordElement.innerText = word;
+    }
+
+    /**
+     * Creates the word elements for the table
+     * @param {*} words to be shown to the user
+     * @param {*} heading of the words
+     * @param {*} element that the words should be added to
+     */
+    addWordsToContainer(words, heading, element) {
+        const tableHead = document.createElement("tr");
+        tableHead.classList.add(String(heading).toLowerCase());
+        var headingElement = document.createElement("th");
+
+        headingElement.classList.add("text-center");
+        headingElement.innerText = `${heading}`;
+
+        tableHead.appendChild(headingElement);
+        element.appendChild(tableHead);
+
+        for (var i = 0; i < words.length; i++) {
+            const tableRow = document.createElement("tr");
+            tableRow.classList.add(String(heading).toLowerCase());
+            var word = words[i];
+            var wordElement = document.createElement("td");
+            var dashedWord = `${word} : `;
+            for (var x = 0; x < word.length; x++) {
+                if (word.charAt(x) == " ") {
+                    dashedWord += "&nbsp&nbsp&nbsp&nbsp";
+                } else {
+                    dashedWord += "_ ";
+                }
+            }
+            wordElement.innerHTML = dashedWord;
+            wordElement.id = `${String(heading).toLowerCase()}-word-${i}`;
+
+            tableRow.appendChild(wordElement);
+            element.appendChild(tableRow);
+        }
     }
 
     /**
@@ -148,14 +165,21 @@ export class OnePicOneWord {
     /**
      * Makes the spanish section visible
      */
-    showSpanishWord() {
-        this.spanishWord.classList.remove("hide-with-space");
+    showSpanishWords() {
+        const spanishWords = document.getElementsByClassName("spanish");
+        for (var i = 0; i < spanishWords.length; i++) {
+            spanishWords[i].classList.remove("hide-with-space");
+        }
     }
 
     /**
      * Makes the spanish section hidden
      */
-    hideSpanishWord() {
-        this.spanishWord.classList.add("hide-with-space");
+    show;
+    hideSpanishWords() {
+        const spanishWords = document.getElementsByClassName("spanish");
+        for (var i = 0; i < spanishWords.length; i++) {
+            spanishWords[i].classList.add("hide-with-space");
+        }
     }
 }

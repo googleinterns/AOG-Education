@@ -11,3 +11,7 @@ intentEvents:
           webhookHandler:
       intent: lang_start_one_pic
       transitionToScene: lang_one_pic
+    - handler:
+          webhookHandler:
+      intent: lang_start_multiple_words
+      transitionToScene: lang_multiple_words
