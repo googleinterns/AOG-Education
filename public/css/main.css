@@ -71,10 +71,11 @@ path {
 
 h3.geo {
     font-size: 5vw;
+    margin: auto 5vw auto auto;
 }
 
 h4.geo {
-    font-size: 4vw;
+    font-size: 3vw;
 }
 
 ul.geo {
@@ -84,13 +85,15 @@ ul.geo {
 }
 
 .geo > li {
-    font-size: 2vw;
+    font-size: 2.5vw;
 }
 
 .geo-correct {
     background-color: #80ff80;
+    width: 15vw;
 }
 
 .geo-incorrect {
     background-color: #ff8080;
+    width: 15vw;
 }

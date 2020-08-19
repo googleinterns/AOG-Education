@@ -1,28 +1,44 @@
 export class GeographyMain {
-    geographyElement = document.createElement("div");
-    text = document.createElement("h3");
+    menuDiv = document.createElement("div");
+    menu = document.createElement("div");
 
-    /**
-     * Creates main scene with one text element.
-     */
-    constructor() {
-        this.geographyElement.classList.add("container", "h-100");
+    createCard(cat, backgroundColor, textColor) {
+        let card = document.createElement("div");
+        card.classList.add("card", backgroundColor, textColor, "text-center", "p-5");
+        this.menu.appendChild(card);
 
-        this.text.classList.add("row", "h-100", "justify-content-center", "align-items-center", "geo");
+        let cardText = document.createElement("h4");
+        cardText.classList.add("card-body", "geo");
+        cardText.innerText = cat;
+        card.appendChild(cardText);
 
-        this.geographyElement.appendChild(this.text);
+        card.onclick = function() {
+            window.interactiveCanvas.sendTextQuery(cat);
+        };
     }
 
     /**
-     * Changes text displayed based on scene.
-     * @param {*} name of state or country
+     * Creates main menu.
      */
-    getGeographyElement(name) {
-        if (name) {
-            this.text.innerText = `What is the capital of ${name}?`;
-        } else {
-            this.text.innerText = "Choose a category: U.S. Capitals, World Capitals, U.S. States, or Countries."
-        }
-        return this.geographyElement;
+    constructor() {
+        this.menuDiv.classList.add("container");
+
+        let heading = document.createElement("h3");
+        heading.classList.add("mt-5", "geo");
+        heading.innerText = "Choose a Category";
+        this.menuDiv.appendChild(heading);
+
+        this.menu.classList.add("card-columns", "h-100", "mt-3");
+        this.menuDiv.appendChild(this.menu);
+
+        this.createCard("U.S. Capitals", "bg-primary", "text-white");
+        this.createCard("World Capitals", "bg-dark", "text-white");
+        this.createCard("U.S. States", "bg-light", "text-black");
+        this.createCard("Countries", "bg-info", "text-white");
+        this.createCard("Visit a City", "bg-secondary", "text-white");
+    }
+
+    getGeographyElement() {
+        return this.menuDiv;
     }
 }

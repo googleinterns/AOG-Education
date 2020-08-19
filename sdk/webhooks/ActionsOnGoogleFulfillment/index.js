@@ -35,7 +35,7 @@ app.handle("welcome", (conv) => {
     conv.add("Welcome User, thank you for choosing AOG Education");
     conv.add(
         new Canvas({
-            url: "https://step-capstone.web.app",
+            url: "https://test-project-e40c9.web.app/",
         })
     );
 });
@@ -79,13 +79,15 @@ app.handle("aog_main_menu_selection", (conv) => {
  */
   
 // Load functions and state coordinates data.
-const geo_functions = require("./geography/functions");
-const geo_state_coords_file = require("./geography/state_coords");
+const geo_functions = require("./functions");
+const geo_state_coords_file = require("./state_coords");
+const geo_cities_file = require("./cities");
 const geo_state_coords = geo_state_coords_file.stateCoords;
+const geo_cities = geo_cities_file.cities;
 
 app.handle("geo_setup", (conv) => {
     geo_functions.setup(conv);
-    conv.add("Choose a category - US Capitals, World Capitals, US States, or Countries.");
+    conv.add("Choose a category (US Capitals, World Capitals, US States, or Countries) or visit a city.");
     conv.add(new Canvas({
         data: {
             command: "GEO_MENU"
@@ -154,6 +156,60 @@ app.handle("geo_country", (conv) => {
     }));
 });
 
+app.handle("geo_choose_city", (conv) => {
+    conv.add("Choose a city to visit.");
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_CHOOSE_CITY",
+            cities: geo_cities
+        }
+    }));
+});
+
+app.handle("geo_city", (conv) => {
+    let city = geo_cities.find(element =>
+        conv.intent.params.answer.resolved.includes(element[0]) ||
+        conv.intent.params.answer.resolved.includes(element[1]) ||
+        conv.intent.params.answer.resolved.includes(element[2]));
+    if (city == undefined) {
+        conv.add("Sorry, we do not support that city.");
+        conv.add(new Canvas());
+    } else {
+        conv.add("To move, say forward or backward. To change directions, say "+
+                "up, down, left, or right.");
+        conv.add(new Canvas({
+            data: {
+                command: "GEO_CITY",
+                lat: city[3],
+                lng: city[4],
+                heading: city[5]
+            }
+        }));
+    }
+});
+
+app.handle("geo_move", (conv) => {
+    switch (conv.intent.params.answer.resolved) {
+        case "up":
+            conv.add(new Canvas({ data: { command: "GEO_UP" } }));
+            break;
+        case "down":
+            conv.add(new Canvas({ data: { command: "GEO_DOWN" } }));
+            break;
+        case "left":
+            conv.add(new Canvas({ data: { command: "GEO_LEFT" } }));
+            break;
+        case "right":
+            conv.add(new Canvas({ data: { command: "GEO_RIGHT" } }));
+            break;
+        case "forward":
+            conv.add(new Canvas({ data: { command: "GEO_FORWARD" } }));
+            break;
+        case "backward":
+            conv.add(new Canvas({ data: { command: "GEO_BACKWARD" } }));
+    }
+});
+
 /**
  * Load results page displaying questions answered correctly and incorrectly.
  */
@@ -197,9 +253,9 @@ app.handle("geo_check_answer", (conv) => {
  */
 
 // AOG Language Headers
-const translation = require("./language/translation");
-const imageAnalysis = require("./language/image_analysis");
-const langGameState = require("./language/lang_game_state");
+const translation = require("./translation");
+const imageAnalysis = require("./image_analysis");
+const langGameState = require("./lang_game_state");
 
 const LANG_INSTRUCTIONS = "Hello user, you can open a new level or change questions.";
 
