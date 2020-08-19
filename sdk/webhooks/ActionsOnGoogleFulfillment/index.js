@@ -571,7 +571,7 @@ app.handle("lang_instructions", (conv) => {
 /*
     Reading Action Handlers
 */
-
+ 
 const Diff = require("diff");
 const database = require("./reading/reformatted4.json");
 
