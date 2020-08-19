@@ -11,17 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-onEnter:
-    webhookHandler: lang_start_one_pic
-intentEvents:
-    - handler:
-          webhookHandler: lang_change_game
-      intent: lang_change_game
-      transitionToScene: lang_menu
-    - handler:
-          webhookHandler: lang_one_pic_answer
-      intent: lang_word
-    - handler:
-          webhookHandler: lang_next_question
-      intent: lang_next_question
-      transitionToScene: lang_one_pic
+parameters:
+    - name: lang_words
+      type:
+          name: lang_words
+trainingPhrases:
+    - ($lang_words 'ten' auto=true)
+    - ($lang_words 'blue' auto=true)
+    - ($lang_words 'road' auto=true)
+    - ($lang_words 'car' auto=true)
+    - ($lang_words 'house' auto=true)
+    - ($lang_words 'pencil' auto=true)

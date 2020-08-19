@@ -11,17 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-onEnter:
-    webhookHandler: lang_start_one_pic
-intentEvents:
-    - handler:
-          webhookHandler: lang_change_game
-      intent: lang_change_game
-      transitionToScene: lang_menu
-    - handler:
-          webhookHandler: lang_one_pic_answer
-      intent: lang_word
-    - handler:
-          webhookHandler: lang_next_question
-      intent: lang_next_question
-      transitionToScene: lang_one_pic
+trainingPhrases:
+    - start one pic multiple words
+    - start one pic multiple words game
+    - one pic multiple words
+    - game 2
+    - game two

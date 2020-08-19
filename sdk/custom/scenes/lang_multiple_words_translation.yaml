@@ -11,14 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-parameters:
-    - name: word
-      type:
-          name: lang_word
-trainingPhrases:
-    - ($word 'ten' auto=true)
-    - ($word 'blue' auto=true)
-    - ($word 'road' auto=true)
-    - ($word 'car' auto=true)
-    - ($word 'house' auto=true)
-    - ($word 'pencil' auto=true)
+intentEvents:
+    - handler:
+          webhookHandler: lang_change_game
+      intent: lang_change_game
+      transitionToScene: lang_menu
+    - handler:
+          webhookHandler: lang_multiple_words_answer_translation
+      intent: lang_word
+      transitionToScene: lang_multiple_words_translation
+    - handler:
+          webhookHandler: lang_next_question
+      intent: lang_next_question
+      transitionToScene: lang_one_pic

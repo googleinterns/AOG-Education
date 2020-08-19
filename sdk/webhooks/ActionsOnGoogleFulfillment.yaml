@@ -21,10 +21,13 @@ handlers:
     - name: lang_instructions
     - name: lang_fallback
     - name: lang_start_one_pic
+    - name: lang_start_multiple_words
     - name: lang_start_vocab
-    - name: lang_one_pic_word
-    - name: lang_one_pic_word_translation
-    - name: lang_one_pic_next_question
+    - name: lang_one_pic_answer
+    - name: lang_multiple_words_answer
+    - name: lang_one_pic_answer_translation
+    - name: lang_multiple_words_answer_translation
+    - name: lang_next_question
     - name: lang_change_game
     # Geography Section
     - name: geo_setup
