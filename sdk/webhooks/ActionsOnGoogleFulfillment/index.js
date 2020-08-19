@@ -24,11 +24,6 @@ const INSTRUCTIONS = "Hello user, This is AOG Education.";
 
 const app = conversation({ debug: true });
 
-// AOG Language Headers
-const translation = require("./language/translation");
-const imageAnalysis = require("./language/image_analysis");
-const langGameState = require("./language/lang_game_state");
-
 /**
  * AOG Education Global Handlers
  */
@@ -42,7 +37,7 @@ app.handle("welcome", (conv) => {
     conv.add("Welcome User, thank you for choosing AOG Education");
     conv.add(
         new Canvas({
-            url: `https://step-capstone.web.app`,
+            url: "https://step-capstone.web.app",
         })
     );
 });
@@ -71,21 +66,144 @@ app.handle("aog_main_menu_selection", (conv) => {
         })
     );
 
+
     if (selection == "language") {
         conv.scene.next.name = "lang_menu";
+    }
+
+    if (selection == "geography") {
+        conv.scene.next.name = "geo_menu";
     }
 });
 
 /**
  * GEOGRAPHY SECTION
  */
+  
+// Load functions and state coordinates data.
+const geo_functions = require("./geography/functions");
+const geo_state_coords_file = require("./geography/state_coords");
+const geo_state_coords = geo_state_coords_file.stateCoords;
+
+app.handle("geo_setup", (conv) => {
+    geo_functions.setup(conv);
+    conv.add("Choose a category - US Capitals, World Capitals, US States, or Countries.");
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_MENU"
+        }
+    }));
+});
+
+/**
+ * Ask US capital question.
+ */
+app.handle("geo_us_capital", (conv) => {
+    conv.session.params.geo_category = "US_CAPITAL";
+    geo_functions.getQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_CAPITAL",
+            name: conv.session.params.geo_name
+        }
+    }));
+});
+
+/**
+ * Ask world capital question.
+ */
+app.handle("geo_world_capital", (conv) => {
+    conv.session.params.geo_category = "WORLD_CAPITAL";
+    geo_functions.getQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_CAPITAL",
+            name: conv.session.params.geo_name
+        }
+    }));
+});
+
+/**
+ * Ask US state question and load the state map in question.
+ */
+app.handle("geo_state", (conv) => {
+    conv.session.params.geo_category = "STATE";
+    geo_functions.getQuestion(conv);
+    conv.add("What is the state pictured?");
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_LOAD_STATE_MAP",
+            coords: geo_state_coords[conv.session.params.geo_name]
+        }
+    }));
+});
+
+/**
+ * Ask country question and load the country map in question.
+ */
+app.handle("geo_country", (conv) => {
+    conv.session.params.geo_category = "COUNTRY";
+    geo_functions.getQuestion(conv);
+    conv.add("What is the country pictured?");
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_LOAD_COUNTRY_MAP",
+            country: conv.session.params.geo_name,
+            region: conv.session.params.geo_region
+        }
+    }));
+});
+
+/**
+ * Load results page displaying questions answered correctly and incorrectly.
+ */
+app.handle("geo_results", (conv) => {
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_SHOW_RESULTS",
+            correct: conv.session.params.geo_correct,
+            incorrect: conv.session.params.geo_incorrect
+        }
+    }));
+});
+
+/**
+ * Check whether the answer is correct and display the corresponding message.
+ */
+app.handle("geo_check_answer", (conv) => {
+    const answer = geo_functions.getCorrectAnswer(conv);
+
+    // Store question as correct or incorrect based on user's last response.
+    if (conv.session.params.geo_correct.includes(answer)) {
+        geo_functions.removeElementByValue(conv.session.params.geo_correct, answer);
+    } else if (conv.session.params.geo_incorrect.includes(answer)) {
+        geo_functions.removeElementByValue(conv.session.params.geo_incorrect, answer);
+    }
+
+    // Remove question from question bank if user answered correctly.
+    if (geo_functions.isCorrect(conv, answer)) {
+        conv.session.params.geo_correct.push(answer);
+        conv.add(`${answer} is correct!`);
+        geo_functions.removeQuestion(conv);
+    } else {
+        conv.session.params.geo_incorrect.push(answer);
+        conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
+    }
+    conv.add(new Canvas());
+});
 
 /**
  * LANGUAGE SECTION
  */
 
-const LANG_INSTRUCTIONS =
-    "Hello user, you can open a new level or change questions.";
+// AOG Language Headers
+const translation = require("./language/translation");
+const imageAnalysis = require("./language/image_analysis");
+const langGameState = require("./language/lang_game_state");
+
+const LANG_INSTRUCTIONS = "Hello user, you can open a new level or change questions.";
 
 /**
  * Sets the Canvas for a webhook

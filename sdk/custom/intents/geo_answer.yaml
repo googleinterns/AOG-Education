@@ -1,0 +1,16 @@
+parameters:
+- name: answer
+  type:
+    name: geo_answer
+
+trainingPhrases:
+- It is ($answer 'California' auto=true)?
+- I think it might be ($answer 'saint louis' auto=true).
+- I guess ($answer 'New York' auto=true).
+- Perhaps ($answer 'colorado' auto=true).
+- Um, ($answer 'Bangladesh' auto=true)?
+- I think it's ($answer 'Sacramento' auto=true)
+- Maybe ($answer 'Rome' auto=true)?
+- ($answer 'Juneau' auto=true)
+- ($answer 'Spain' auto=true) is the answer.
+- ($answer 'New Hampshire' auto=true) I think.

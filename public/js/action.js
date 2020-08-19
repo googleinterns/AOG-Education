@@ -20,7 +20,24 @@ export class Action {
                     this.scene.openReading();
                 }
             },
+
             // AOG Education Geography Commands
+            GEO_MENU: (data) => {
+                this.scene.geoMenu(data);
+            },
+            GEO_CAPITAL: (data) => {
+                this.scene.geoCapital(data);
+            },
+            GEO_LOAD_STATE_MAP: (data) => {
+                this.scene.geoLoadStateMap(data);
+            },
+            GEO_LOAD_COUNTRY_MAP: (data) => {
+                this.scene.geoLoadCountryMap(data);
+            },
+            GEO_SHOW_RESULTS: (data) => {
+                this.scene.geoShowResults(data);
+            },
+
             // AOG Education Language Commands
             LANG_MENU: (data) => {
                 this.scene.langOpenLanguageMenu(data.value);
@@ -58,7 +75,14 @@ export class Action {
             // AOG Education Reading Commands
         };
         this.commands.AOG_MAIN_MENU_SELECTION.bind(this);
+
         // AOG Education Geography Commands
+        this.commands.GEO_MENU.bind(this);
+        this.commands.GEO_CAPITAL.bind(this);
+        this.commands.GEO_LOAD_COUNTRY_MAP.bind(this);
+        this.commands.GEO_LOAD_STATE_MAP.bind(this);
+        this.commands.GEO_SHOW_RESULTS.bind(this);
+
         // AOG Education Language Commands
         this.commands.LANG_START_ONE_PIC.bind(this);
         this.commands.LANG_ONE_PIC_UPDATE_ATTEMPTS.bind(this);
@@ -68,6 +92,7 @@ export class Action {
         this.commands.LANG_ONE_PIC_SHOW_SPANISH.bind(this);
         this.commands.LANG_MULTIPLE_WORDS_SHOW_SPANISH.bind(this);
         this.commands.LANG_MENU.bind(this);
+
         // AOG Education Reading Commands
     }
     /**

@@ -1,0 +1,12 @@
+onEnter:
+  webhookHandler: geo_setup
+
+intentEvents:
+- intent: geo_us_capital_cat
+  transitionToScene: geo_us_capital
+- intent: geo_world_capital_cat
+  transitionToScene: geo_world_capital
+- intent: geo_state_cat
+  transitionToScene: geo_state
+- intent: geo_country_cat
+  transitionToScene: geo_country

@@ -1,5 +1,7 @@
 import { AogMainMenu } from "./global/aog-main-menu.js";
 import { GeographyMain } from "./geography/geography-main.js";
+import { GeographyMap } from "./geography/geography-map.js";
+import { GeographyResults } from "./geography/geography-results.js";
 import { LanguageMain } from "./language/language-main.js";
 import { OnePicOneWord } from "./language/one_pic_one_word.js";
 import { OnePicMultipleWords } from "./language/one_pic_multiple_words.js";
@@ -8,6 +10,8 @@ import { ReadingMain } from "./reading/reading-main.js";
 export class Scene {
     menu = new AogMainMenu();
     geography = new GeographyMain();
+    geography_map = new GeographyMap();
+    geography_results = new GeographyResults();
     language = new LanguageMain();
     onePicOneWord = new OnePicOneWord();
     onePicMultipleWords = new OnePicMultipleWords();
@@ -16,7 +20,6 @@ export class Scene {
 
     constructor() {
         this.game.appendChild(this.menu.getMenu());
-        this.createCanvas();
     }
 
     openGeography() {
@@ -32,6 +35,133 @@ export class Scene {
     openReading() {
         this.game.removeChild(this.menu.getMenu());
         this.game.appendChild(this.reading.getReadingElement());
+    }
+
+    /**
+     * Geography Section
+     */
+
+    geoMenu() {
+        this.game.removeChild(this.geography_results.getGeographyResults());
+        this.game.appendChild(this.geography.getGeographyElement());
+    }
+
+    /**
+     * Displays capital question.
+     * @param {*} data contains name of state or country in question
+     */
+    geoCapital(data) {
+        this.geoRemoveGeographyElement();
+        this.game.appendChild(this.geography.getGeographyElement(data.name));
+    }
+
+    /**
+     * Loads map corresponding to state question.
+     * @param {*} data stores the coordinates of the state
+     */
+    geoLoadStateMap(data) {
+        this.geoRemoveGeographyElement();
+        this.geoOpenMap("states");
+
+        // Set map center and zoom.
+        const coords = data.coords;
+        this.map = new google.maps.Map(document.getElementById('map'));
+        this.map.setCenter({lat: coords[0].lat, lng: coords[0].lng});
+        this.map.setZoom(5);
+
+        // Construct the polygon.
+        let polygon = new google.maps.Polygon();
+        polygon.setOptions({
+            paths: coords,
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.8,
+            strokeWeight: 1,
+            fillColor: "#FF0000",
+            fillOpacity: 0.35
+        });
+        polygon.setMap(this.map);
+
+        // Remove map labels.
+        const labelsOff = [
+            {
+                "elementType": "labels",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "administrative.province",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "lightness": -100
+                    },
+                    {
+                        "weight": 1
+                    }
+                ]
+            }
+        ];
+
+        // Set map labels.
+        this.map.set('styles', labelsOff);
+    }
+
+    /**
+     * Loads map corresponding to country question.
+     * @param {*} data that stores the country and M49 region
+     */
+    geoLoadCountryMap(data) {
+        this.geoRemoveGeographyElement();
+        this.geoOpenMap("countries");
+
+        // Create chart.
+        this.map = new google.visualization.GeoChart(document.getElementById('map'));
+        const dataTable = google.visualization.arrayToDataTable([
+            ['Country'],
+            [data.country],
+        ]);
+
+        // Set styling, map region, and map interactivity.
+        const options = {
+            backgroundColor: '#81d4fa',
+            datalessRegionColor: '#ffd7e9',
+            defaultColor: '#8b0000',
+            region: data.region,
+            tooltip: {trigger: 'none'},
+        };
+
+        // Draw map with specified country and options.
+        this.map.draw(dataTable, options);
+    }
+
+    /**
+     * @param {*} data that stores the number of questions answered correctly and incorrectly.
+     */
+    geoShowResults(data) {
+        this.geoRemoveGeographyElement();
+        this.geoRemoveMap();
+        this.game.appendChild(this.geography_results.setGeographyResults(data.correct, data.incorrect));
+    }
+
+    geoOpenMap(map) {
+        if (!this.game.contains(this.geography_map.getGeographyMap())) {
+            this.game.appendChild(this.geography_map.getGeographyMap(map));
+        }
+    }
+
+    geoRemoveMap() {
+        if (this.game.contains(this.geography_map.getGeographyMap())) {
+            this.game.removeChild(this.geography_map.getGeographyMap());
+        }
+    }
+
+    geoRemoveGeographyElement() {
+        if (this.game.contains(this.geography.getGeographyElement())) {
+            this.game.removeChild(this.geography.getGeographyElement());
+        }
     }
 
     /**
