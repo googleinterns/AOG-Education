@@ -12,7 +12,7 @@ document.head.appendChild(mapScript);
 google.charts.load("current", {
     "packages":["geochart"],
     "mapsApiKey": MAPS_API_KEY
-});
+}); 
 
 window.addEventListener("load", () => {
     window.scene = new Scene();
