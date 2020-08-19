@@ -700,7 +700,7 @@ app.handle("read_restartBook", (conv) => {
   );
 
   checkForchapter(conv, text);
-});
+}); 
 
 function getText(conv) {
   let bookTitle = conv.user.params.currentBook;
