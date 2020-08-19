@@ -1,0 +1,12 @@
+onEnter:
+  staticPrompt:
+    candidates:
+    - promptResponse:
+        firstSimple:
+          variants:
+          - speech: Here are your results. To return to the geography menu, say Main Menu.
+  webhookHandler: geo_results
+
+intentEvents:
+- intent: geo_menu
+  transitionToScene: geo_menu

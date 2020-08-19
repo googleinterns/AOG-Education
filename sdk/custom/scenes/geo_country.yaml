@@ -1,0 +1,12 @@
+conditionalEvents:
+- condition: session.params.geo_num_questions_left == 0
+  transitionToScene: geo_results
+- condition: session.params.geo_num_questions_left > 0
+  handler:
+    webhookHandler: geo_country
+
+intentEvents:
+- handler:
+    webhookHandler: geo_check_answer
+  intent: geo_answer
+  transitionToScene: geo_country

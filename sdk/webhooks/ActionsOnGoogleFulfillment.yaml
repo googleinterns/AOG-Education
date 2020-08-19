@@ -28,11 +28,13 @@ handlers:
     - name: lang_change_game
     # Geography Section
     - name: geo_setup
-    - name: geo_askUSCapitalQuestion
-    - name: geo_askWorldCapitalQuestion
-    - name: geo_askStateQuestion
-    - name: geo_askCountryQuestion
-    - name: geo_checkAnswer
-    - name: geo_viewResults
+    - name: geo_us_capital
+    - name: geo_world_capital
+    - name: geo_state
+    - name: geo_country
+    - name: geo_check_answer
+    - name: geo_results
 httpsEndpoint:
-    baseUrl: "https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment"
+    baseUrl: https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment
+# inlineCloudFunction:
+#     executeFunction: ActionsOnGoogleFulfillment
