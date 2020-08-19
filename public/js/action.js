@@ -48,37 +48,33 @@ export class Action {
       ///////////////////////////////////////////
 
       READ_WRITE_TO_LIBRARY: (data) => {
-        //loop through the data-json
-        //Dynamically create Book(title,src) objects and append it
-        //to the library container
+        this.scene.reading.getLibrary().clearLibrary();
+        this.scene.reading.getLibrary().addToLibrary(data.books);
       },
       READ_BOOK_SELECTED: (data) => {
         this.scene.reading.getText().setText(data.text);
         this.scene.reading.openText();
-        //Parse the data-json
-        //create a Text() object and display it on the screen
       },
       READ_CHANGE_TEXT: (data) => {
-        //send the api the index we are on, if ommited, assume 0,
-        //keep counter on the frontend to track current index;
         this.scene.reading.getText().setText(data.text);
       },
       READ_OPEN_LIBRARY: (data) => {
         this.scene.reading.openLibrary();
       },
       READ_TEXT_FEEDBACK: (data) => {
-        this.scene.reading.getText().hideBookText();
-        this.scene.reading.getText().setText(data.matched);
+        this.scene.reading.getText().setRanges(data.ranges);
+        this.scene.reading.getText().setWords(data.words);
       }
 
     };
     this.commands.AOG_MAIN_MENU_SELECTION.bind(this);
-    // AOG Education Geography Commands
+
     // AOG Education Language Commands
     this.commands.LANG_START_ONE_PIC.bind(this);
     this.commands.LANG_ONE_PIC_SHOW_ENGLISH.bind(this);
     this.commands.LANG_ONE_PIC_SHOW_SPANISH.bind(this);
     this.commands.LANG_MENU.bind(this);
+
     // AOG Education Reading Commands
     this.commands.READ_WRITE_TO_LIBRARY.bind(this);
     this.commands.READ_BOOK_SELECTED.bind(this);
@@ -90,6 +86,7 @@ export class Action {
     this.commands.LOAD_COUNTRY_MAP.bind(this);
     this.commands.LOAD_STATE_MAP.bind(this);
   }
+
   /**
    * Register all callbacks used by Interactive Canvas
    * executed during scene creation time.
@@ -109,13 +106,11 @@ export class Action {
       //Synchronize Assistant dialogue with text highlighting and page transition
       onTtsMark: async (markName) => {
         if (markName === "FIN") {
-          let textContainer = document.getElementById("book-text");
-          textContainer.removeChild(textContainer.lastChild);
+          this.scene.reading.getText().clearHighlights();
           await this.canvas.sendTextQuery("Go next"); //move to next page once assistant is done reading
-          this.scene.reading.getText().showBookText();
         }
         if (markName ==='OK') { //begining of assistants speech
-          this.scene.reading.getText().highlight();
+          this.scene.reading.getText().startHighlighting();
         }
       }
     };

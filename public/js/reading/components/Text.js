@@ -1,50 +1,74 @@
-import {lumin} from "./lumin.min.js";
 /**
- * Book Text Viewer Scene
+ * Text Viewer Scene
  */
-export class Text{
-    /**
-     * Initializes the game with visual components.
-     */
+export class Text {
 
-    textContainer = document.createElement("div");
-    text = document.createElement("p");
+  textContainer = document.createElement("div");
+  text = document.createElement("p");
+  interval;
+  index;
+  ranges;
+  words;
+  instance;
 
-    constructor() {
-        this.textContainer.appendChild(this.text);
-        this.textContainer.classList.add("flex-center");
-        this.textContainer.setAttribute("id","book-text");
-        this.text.setAttribute("style", "display: flex");
+  constructor() {
+    this.text.classList.add("text");
+    this.textContainer.classList.add("text-container");
+    this.textContainer.appendChild(this.text);
+    this.instance = new Mark(this.textContainer);
+  }
+
+  setText(newText) {
+    this.text.innerText = newText;
+  }
+
+  setRanges(newRanges){
+      this.index = 0;
+      this.ranges = newRanges;
+  }
+
+  setWords(newWords){
+      this.words = newWords;
+  }
+
+  startHighlighting() {
+    this.interval = setInterval(() => {
+        if(this.ranges[this.index]["length"] > this.ranges[this.index]["chars"])
+        {
+          this.index++;
+          if(this.index >= this.ranges.length)
+          {
+            clearInterval(this.interval);
+          }
+        }
+        else{
+          this.ranges[this.index]["length"] += 1;
+          this.highlight();
+        }
+      }, 50);
+  }
+
+  highlight() {
+    this.instance.unmark();
+    this.instance.markRanges(this.ranges);
+    for (let i = 0; i < this.words.length; i++) {
+      this.instance.mark(this.words[i], { className: "red-highlight" });
     }
+  }
 
-    setText(newText) {
-        this.text.innerText = newText;
-    }
+  clearHighlights(){
+      this.instance.unmark();
+  }
 
-    highlight(){
-        let luminator = lumin(this.textContainer);
-        luminator.start(this.text.innerText.length* 50);
-        this.textContainer.lastChild.setAttribute("style", "position: relative");
-        this.textContainer.lastChild.lastChild.setAttribute("style", "display: flex");
-    }
+  getText() {
+    return this.textContainer;
+  }
 
-    showBookText(){
-        this.text.setAttribute("style", "display: flex");
-    }
+  hideText() {
+    this.textContainer.style.display = "none";
+  }
 
-    hideBookText(){
-        this.text.setAttribute("style", "display: none");
-    }
-
-    getText() {
-        return this.textContainer;
-    }
-
-    hideText(){
-        this.textContainer.setAttribute("style", "display:none");
-    }
-
-    showText(){
-        this.textContainer.setAttribute("style", "display:flex");
-    }
+  showText() {
+    this.textContainer.style.display = "block";
+  }
 }

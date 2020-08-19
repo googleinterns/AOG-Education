@@ -12,25 +12,26 @@ export class Library{
     constructor() {
         this.libraryContainer.classList.add("flex-center");
         this.libraryContainer.setAttribute("id", "libraryContainer");
-        let books = document.createElement("div");
-        books.classList.add("bookshelf");
-        
-        //->temp place holder, make it dynamic
-        //->add onclick on the book objects to send a textquery
-        //to the backend and force a server-side scene switch to the text object
-        let gw = new Book("child Stories", "./img/reading/bc.jpg");
-        books.appendChild(gw.getbook());
-        this.libraryContainer.appendChild(books);
     }
 
-    //Consider using a queue to store the Books(display 3-5 at a time)
+    //consider using a queue
     addToLibrary(books){ 
-        //Remove all children iterativley
-        while (this.libraryContainer.firstChild) {
+        let bookshelf = document.createElement("div");
+        bookshelf.classList.add("bookshelf");
+        for(let i = 0; i < books.length; i++)
+        {
+            let gw = new Book(books[i]["title"], books[i]["imgSrc"]);
+            bookshelf.appendChild(gw.getBook());
+        }
+        
+        this.libraryContainer.appendChild(bookshelf);
+    }
+
+    clearLibrary(){
+        //removes the bookshelf container
+        if(this.libraryContainer.lastChild){
             this.libraryContainer.removeChild(this.libraryContainer.lastChild);
         }
-
-        this.libraryContainer = books //books is assumed to be a dv containing book elements
     }
 
     getLibrary(){

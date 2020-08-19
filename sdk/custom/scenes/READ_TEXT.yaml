@@ -2,23 +2,24 @@ conditionalEvents:
 - condition: scene.slots.status == "FINAL"
   handler:
     webhookHandler: read_analyseUserInput
+  transitionToScene: read_TEXT
 intentEvents:
 - handler:
+    webhookHandler: read_restartBook
+  intent: read_RESTART
+  transitionToScene: read_TEXT
+- handler:
     webhookHandler: read_openLibrary
-  intent: READ_GOTO_LIBRARY
-  transitionToScene: READ_LIBRARY
+  intent: read_GOTO_LIBRARY
+  transitionToScene: read_LIBRARY
 - handler:
     webhookHandler: read_nextChunk
-  intent: READ_NEXT
-  transitionToScene: READ_TEXT
-- handler:
-    webhookHandler: read_restartBook
-  intent: READ_RESTART
-  transitionToScene: READ_TEXT
+  intent: read_NEXT
+  transitionToScene: read_TEXT
 slots:
 - commitBehavior:
     writeSessionParam: userInput
   name: userInput
   required: true
   type:
-    name: R_Input
+    name: read_Input

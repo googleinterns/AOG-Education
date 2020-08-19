@@ -2,7 +2,7 @@ conditionalEvents:
 - condition: scene.slots.status == "FINAL"
   handler:
     webhookHandler: read_bookSelected
-  transitionToScene: READ_TEXT
+  transitionToScene: read_TEXT
 slots:
 - commitBehavior:
     writeSessionParam: bookTitle
@@ -16,7 +16,8 @@ slots:
               variants:
               - speech: What is the title of the book you would like to read?
             suggestions:
-            - title: Child Stories
+            - title: The Book of DRAGONS
+            - title: The Cash Boy
   required: true
   type:
-    name: R_Book
+    name: read_Book
