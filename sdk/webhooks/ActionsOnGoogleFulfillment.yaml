@@ -30,6 +30,7 @@ handlers:
     - name: read_openLibrary
     - name: read_nextChunk
     - name: read_restartBook
+    - name: read_initialize
 
 httpsEndpoint:
     baseUrl: https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment
