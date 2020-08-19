@@ -2,7 +2,7 @@ conditionalEvents:
 - condition: scene.slots.status == "FINAL"
   handler:
     webhookHandler: read_bookSelected
-  transitionToScene: read_TEXT
+  transitionToScene: READ_TEXT
 slots:
 - commitBehavior:
     writeSessionParam: bookTitle
