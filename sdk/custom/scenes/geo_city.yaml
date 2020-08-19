@@ -1,0 +1,5 @@
+intentEvents:
+- handler:
+    webhookHandler: geo_move
+  intent: geo_answer
+  transitionToScene: geo_city
