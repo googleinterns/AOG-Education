@@ -3,9 +3,9 @@ import { GeographyMain } from "./geography/geography-main.js";
 import { GeographyMap } from "./geography/geography-map.js";
 import { GeographyResults } from "./geography/geography-results.js";
 import { LanguageMain } from "./language/language-main.js";
+import { ReadingMain } from "./reading/ReadingMain.js";
 import { OnePicOneWord } from "./language/one_pic_one_word.js";
 import { OnePicMultipleWords } from "./language/one_pic_multiple_words.js";
-import { ReadingMain } from "./reading/reading-main.js";
 
 export class Scene {
     menu = new AogMainMenu();

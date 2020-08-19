@@ -1,14 +1,10 @@
 category: GAMES_AND_TRIVIA
 defaultLocale: en
 localizedSettings:
-    developerEmail:
-    developerName:
+    developerEmail: AOG2@ElectricBoogaloo.aol
+    developerName: STEP SQUAD
     displayName: AOG Education
-    fullDescription:
-    privacyPolicyUrl:
     pronunciation: AOG Education
-    shortDescription:
-    smallLogoImage:
-    termsOfServiceUrl:
+    voice: male_3
 projectId: step-capstone
 usesInteractiveCanvas: true

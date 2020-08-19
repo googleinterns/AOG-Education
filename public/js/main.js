@@ -1,5 +1,5 @@
-import { Action } from "./action.js";
-import { Scene } from "./scene.js";
+import { Action } from "./Action.js";
+import { Scene } from "./Scene.js";
 import { MAPS_API_KEY } from "./config.js"
 
 // Load Google Maps API
