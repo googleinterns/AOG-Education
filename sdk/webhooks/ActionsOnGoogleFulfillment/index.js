@@ -54,7 +54,7 @@ app.handle("aog_main_menu_selection", (conv) => {
   }
 
   if (selection == "geography") {
-    conv.scene.next.name = "geo_scene_category";
+    conv.scene.next.name = "geo_menu";
   }
 
   if (selection == "reading") {
