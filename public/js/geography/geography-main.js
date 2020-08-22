@@ -18,7 +18,7 @@ export class GeographyMain {
     }
 
     /**
-     * Creates main menu.
+     * Creates main geography menu.
      */
     constructor() {
         this.menuDiv.classList.add("container");

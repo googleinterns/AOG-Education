@@ -67,9 +67,17 @@ export class Scene {
 
         // Set map center and zoom.
         const coords = data.coords;
-        this.map = new google.maps.Map(document.getElementById('map'));
-        this.map.setCenter({lat: coords[0].lat, lng: coords[0].lng});
-        this.map.setZoom(5);
+        this.map = new google.maps.Map(
+            document.getElementById("map"),
+            {
+                center: {
+                    lat: coords[0].lat,
+                    lng: coords[0].lng
+                },
+                zoom: 5,
+                disableDefaultUI: true
+            }
+        );
 
         // Construct the polygon.
         let polygon = new google.maps.Polygon();
@@ -174,9 +182,19 @@ export class Scene {
                     heading: data.heading,
                     pitch: 0
                 },
-                zoom: 1
+                zoom: 1,
+                disableDefaultUI: true
             }
         );
+
+        let back = document.createElement("button");
+        back.classList.add("map", "btn", "btn-dark", "fixed-top");
+        back.innerText = "x";
+        this.game.appendChild(back);
+        back.onclick = function() {
+            window.interactiveCanvas.sendTextQuery('Close map');
+            back.remove();
+        };
     }
 
     geoForward() {
@@ -234,8 +252,8 @@ export class Scene {
     }
 
     geoRemoveGeographyQuestion() {
-        if (this.game.contains(this.geography_question.geoRemoveGeographyQuestion())) {
-            this.game.removeChild(this.geography_question.geoRemoveGeographyQuestion());
+        if (this.game.contains(this.geography_question.getQuestion())) {
+            this.game.removeChild(this.geography_question.getQuestion());
         }
     }
 

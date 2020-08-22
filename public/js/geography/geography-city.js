@@ -19,10 +19,10 @@ export class GeographyCity {
 
         let mainMenu = document.createElement("button");
         mainMenu.classList.add("geo", "btn", "btn-secondary", "btn-block", "col", "h-25");
-        mainMenu.innerText = "Main Menu";
+        mainMenu.innerText = "Home";
         headingDiv.appendChild(mainMenu);
         mainMenu.onclick = function() {
-            window.interactiveCanvas.sendTextQuery("Main Menu");
+            window.interactiveCanvas.sendTextQuery("Geography Home");
         };
     }
 

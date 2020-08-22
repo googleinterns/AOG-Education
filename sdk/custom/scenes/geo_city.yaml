@@ -3,3 +3,5 @@ intentEvents:
     webhookHandler: geo_move
   intent: geo_answer
   transitionToScene: geo_city
+- intent: geo_back
+  transitionToScene: geo_visit

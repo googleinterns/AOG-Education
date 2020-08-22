@@ -6,7 +6,7 @@ export class GeographyQuestion {
      * Creates main scene with one text element.
      */
     constructor() {
-        this.question.classList.add("container");
+        this.question.classList.add("container", "h-100");
 
         this.text.classList.add("row", "h-100", "justify-content-center", "align-items-center", "geo");
 
@@ -18,7 +18,9 @@ export class GeographyQuestion {
      * @param {*} name of state or country
      */
     getQuestion(name) {
-        this.text.innerText = `What is the capital of ${name}?`;
+        if (name) {
+            this.text.innerText = `What is the capital of ${name}?`;
+        }
         return this.question;
     }
 }

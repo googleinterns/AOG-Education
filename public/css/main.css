@@ -97,3 +97,7 @@ ul.geo {
     background-color: #ff8080;
     width: 15vw;
 }
+
+button.map {
+    margin: 9rem 1rem;
+}

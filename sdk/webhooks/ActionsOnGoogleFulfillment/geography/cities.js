@@ -2,7 +2,7 @@ module.exports.cities = [
     // city, country, landmark, latitude, longitude, heading
 
     ['Aguas Calientes', 'Peru', 'Machu Picchu', -13.1625238, -72.544647, 140],
-    ['Banff', 'Canada', 'Banff National Park', 51.1814617, -115.6036637, 133.56],
+    ['Banff', 'Canada', 'Lake Louise', 51.4168829, -116.2179638, 226.55],
     ['Denizli', 'Turkey', 'Travertines of Pamukkale', 37.924933, 29.1209729, 72.99],
     ['Hirosaki', 'Japan', 'Hirosaki Park', 40.6111205, 140.4634343, 232.78],
     ['Paris', 'France', 'Eiffel Tower', 48.8559422, 2.2981415, 0],

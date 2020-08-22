@@ -87,7 +87,7 @@ const geo_cities = geo_cities_file.cities;
 
 app.handle("geo_setup", (conv) => {
     geo_functions.setup(conv);
-    conv.add("Choose a category (US Capitals, World Capitals, US States, or Countries) or visit a city.");
+    conv.add("Choose a category.");
     conv.add(new Canvas({
         data: {
             command: "GEO_MENU"
@@ -157,7 +157,7 @@ app.handle("geo_country", (conv) => {
 });
 
 app.handle("geo_choose_city", (conv) => {
-    conv.add("Choose a city to visit.");
+    conv.add("Choose a place to visit.");
     conv.add(new Canvas({
         data: {
             command: "GEO_CHOOSE_CITY",
@@ -174,6 +174,7 @@ app.handle("geo_city", (conv) => {
     if (city == undefined) {
         conv.add("Sorry, we do not support that city.");
         conv.add(new Canvas());
+        conv.scene.next.name = "geo_visit";
     } else {
         conv.add("To move, say forward or backward. To change directions, say "+
                 "up, down, left, or right.");
@@ -191,21 +192,27 @@ app.handle("geo_city", (conv) => {
 app.handle("geo_move", (conv) => {
     switch (conv.intent.params.answer.resolved) {
         case "up":
+            conv.add("Shifting up.");
             conv.add(new Canvas({ data: { command: "GEO_UP" } }));
             break;
         case "down":
+            conv.add("Shifting down.");
             conv.add(new Canvas({ data: { command: "GEO_DOWN" } }));
             break;
         case "left":
+            conv.add("Turning left.");
             conv.add(new Canvas({ data: { command: "GEO_LEFT" } }));
             break;
         case "right":
+            conv.add("Turning right.");
             conv.add(new Canvas({ data: { command: "GEO_RIGHT" } }));
             break;
         case "forward":
+            conv.add("Moving forward.");
             conv.add(new Canvas({ data: { command: "GEO_FORWARD" } }));
             break;
         case "backward":
+            conv.add("Moving backward.");
             conv.add(new Canvas({ data: { command: "GEO_BACKWARD" } }));
     }
 });
