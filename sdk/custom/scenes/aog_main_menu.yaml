@@ -1,3 +1,5 @@
+onEnter:
+  webhookHandler: geo_setup
 intentEvents:
     - handler:
           webhookHandler: aog_instructions

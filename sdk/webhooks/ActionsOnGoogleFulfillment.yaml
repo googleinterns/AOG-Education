@@ -2,9 +2,9 @@ handlers:
     - name: welcome
     - name: aog_instructions
     - name: aog_main_menu_selection
+    - name: aog_open_main_menu
     - name: fallback
     # Language Section
-    - name: lang_welcome
     - name: lang_instructions
     - name: lang_fallback
     - name: lang_start_one_pic

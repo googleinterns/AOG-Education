@@ -22,6 +22,11 @@ export class Scene {
         this.game.appendChild(this.menu.getMenu());
     }
 
+    aogOpenMainMenu() {
+        this.game.innerHTML = "";
+        this.game.appendChild(this.menu.getMenu());
+    }
+
     openGeography() {
         this.game.removeChild(this.menu.getMenu());
         this.game.appendChild(this.geography.getGeographyElement());
