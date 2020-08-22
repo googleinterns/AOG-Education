@@ -16,8 +16,6 @@ export class Action {
           this.scene.openGeography();
         } else if (data.selection == "language") {
           this.scene.openLanguage();
-        } else if (data.selection == "reading") {
-          this.scene.openReading();
         }
       },
       AOG_OPEN_MAIN_MENU: (data) => {
@@ -80,6 +78,7 @@ export class Action {
       ///////////////////////////////////////////
 
       READ_WRITE_TO_LIBRARY: (data) => {
+        this.scene.openReading();
         this.scene.reading.getLibrary().clearLibrary();
         this.scene.reading.getLibrary().addToLibrary(data.books);
       },

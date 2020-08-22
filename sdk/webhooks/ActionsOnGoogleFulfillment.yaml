@@ -17,6 +17,7 @@ handlers:
     - name: lang_next_question
     - name: lang_change_game
     # Geography Section
+    - name: geo_setup
     - name: geo_us_capital
     - name: geo_world_capital
     - name: geo_state
@@ -30,8 +31,9 @@ handlers:
     - name: read_openLibrary
     - name: read_nextChunk
     - name: read_restartBook
+    - name: read_initialize
 
 httpsEndpoint:
     baseUrl: https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment
 # inlineCloudFunction:
-#     executeFunction: ActionsOnGoogleFulfillment
+#    executeFunction: ActionsOnGoogleFulfillment

@@ -26,7 +26,7 @@ app.handle("welcome", (conv) => {
 });
 
 app.handle("aog_open_main_menu", (conv) => {
-    conv.scene.next = "aog_main_menu"
+    conv.add("Returning to main menu");
     conv.add(
         new Canvas({
             data: {
@@ -47,48 +47,55 @@ app.handle("aog_instructions", (conv) => {
 });
 
 app.handle("aog_main_menu_selection", (conv) => {
-    const selection = conv.intent.params.selection
-        ? conv.intent.params.selection.resolved
-        : null;
-    conv.add(`Ok, starting ${selection}.`);
+  const selection = conv.intent.params.selection
+    ? conv.intent.params.selection.resolved
+    : null;
+  conv.add(`Ok, starting ${selection}.`);
+
+  if (selection == "language") {
     conv.add(
-        new Canvas({
-            data: {
-                command: "AOG_MAIN_MENU_SELECTION",
-                selection: selection,
-            },
-        })
+      new Canvas({
+        data: {
+          command: "AOG_MAIN_MENU_SELECTION",
+          selection: selection,
+        },
+      })
     );
+    conv.scene.next.name = "lang_menu";
+  }
 
-    if (selection == "language") {
-        conv.scene.next.name = "lang_menu";
+  if (selection == "geography") {
+    conv.add(
+      new Canvas({
+        data: {
+          command: "AOG_MAIN_MENU_SELECTION",
+          selection: selection,
+        },
+      })
+    );
+    conv.scene.next.name = "geo_menu";
+  }
+
+  if (selection == "reading") {
+    let books = [];
+    let keys = Object.keys(database);
+    for (i in keys) {
+      let imgSrc = database[keys[i]]["Image"];
+      let title = keys[i];
+      let book = { imgSrc, title };
+      books.push(book);
     }
 
-    if (selection == "geography") {
-        conv.scene.next.name = "geo_menu";
-    }
-
-    if (selection == "reading") {
-        let books = [];
-        let keys = Object.keys(database);
-        for (i in keys) {
-            let imgSrc = database[keys[i]]["Image"];
-            let title = keys[i];
-            let book = { imgSrc, title };
-            books.push(book);
-        }
-
-        conv.add("Welcome to Reading with the Google Assistant!");
-        conv.add(
-            new Canvas({
-                data: {
-                    command: "WRITE_TO_LIBRARY",
-                    books: books,
-                },
-            })
-        );
-        conv.scene.next.name = "read_LIBRARY";
-    }
+    conv.add(
+      new Canvas({
+        data: {
+          command: "READ_WRITE_TO_LIBRARY",
+          books: books,
+        },
+      })
+    );
+    conv.scene.next.name = "READ_LIBRARY";
+  }
 });
 
 /**
@@ -694,42 +701,42 @@ app.handle("read_nextChunk", (conv) => {
 });
 
 app.handle("read_restartBook", (conv) => {
-    const bookTitle = conv.user.params.currentBook;
-    conv.user.params[bookTitle]["chunk"] = 0; //setting the chunk number to 0
-    conv.scene.next.name = "read_TEXT";
+  const bookTitle = conv.user.params.currentBook;
+  conv.user.params[bookTitle]["chunk"] = 0; //setting the chunk number to 0
+  conv.scene.next.name = "READ_TEXT";
 
-    let text = getText(conv);
-    conv.add(
-        new Canvas({
-            data: {
-                command: "READ_CHANGE_TEXT",
-                text: text,
-            },
-        })
-    );
+  let text = getText(conv);
+  conv.add(
+    new Canvas({
+      data: {
+        command: "READ_CHANGE_TEXT",
+        text: text,
+      },
+    })
+  );
 
-    checkForchapter(conv, text);
+  checkForchapter(conv, text);
 });
 
 function getText(conv) {
     let bookTitle = conv.user.params.currentBook;
     let { chunk, size } = conv.user.params[bookTitle];
-
+  
     let text = "";
     if (chunk >= size) {
-        text = "The End.";
-        conv.add(
-            "You can Reread this book or Go Back To The Library to find a new book."
-        );
-        conv.scene.next.name = "read_FINISH";
+      text = "The End.";
+      conv.add(
+        "You can Reread this book or Go Back To The Library to find a new book."
+      );
+      conv.scene.next.name = "READ_FINISH";
     } else {
-        let temp = database[bookTitle]["Text"][chunk];
-        for (let i = 0; i < temp.length; i++) {
-            text = text + temp[i] + " ";
-        }
+      let temp = database[bookTitle]["Text"][chunk];
+      for (let i = 0; i < temp.length; i++) {
+        text = text + temp[i] + " ";
+      }
     }
     return text;
-}
+  }
 
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, function (txt) {

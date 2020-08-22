@@ -2,9 +2,16 @@
 #libraryContainer {
     height: 100%;
     border: 3px solid black;
-    margin-top: 10vh;
+    justify-content: space-evenly;
+    align-items: center;
   }
   
+#reading {
+  height: 80%;
+  width: 100%;
+  background-color: cornsilk;
+}
+
   .bookshelf {
     width: 90vw;
     border: 2px solid blueviolet;
@@ -37,7 +44,7 @@
   /* Text Class Styling Below*/
   .text-container {
     height: 80vh;
-    margin: 10vh 0;
+    margin-top: -55vh;
     padding: 0 10vw;
     font-size: 40px;
     text-align: center;
@@ -56,3 +63,7 @@
     color: red;
   }
   
+  mark{
+    background: #0C374D;
+    color: white;
+  }

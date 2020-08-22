@@ -38,6 +38,8 @@ export class Scene {
     }
 
     openReading() {
+        this.game.style.display = "flex";
+        this.game.style.alignItems = "center";
         this.game.removeChild(this.menu.getMenu());
         this.game.appendChild(this.reading.getReadingElement());
     }
