@@ -64,59 +64,7 @@ export class Scene {
     geoLoadStateMap(data) {
         this.geoRemoveGeographyElement();
         this.geoOpenMap("states");
-
-        // Set map center and zoom.
-        const coords = data.coords;
-        this.map = new google.maps.Map(
-            document.getElementById("map"),
-            {
-                center: {
-                    lat: coords[0].lat,
-                    lng: coords[0].lng
-                },
-                zoom: 5,
-                disableDefaultUI: true
-            }
-        );
-
-        // Construct the polygon.
-        let polygon = new google.maps.Polygon();
-        polygon.setOptions({
-            paths: coords,
-            strokeColor: "#FF0000",
-            strokeOpacity: 0.8,
-            strokeWeight: 1,
-            fillColor: "#FF0000",
-            fillOpacity: 0.35
-        });
-        polygon.setMap(this.map);
-
-        // Remove map labels.
-        const labelsOff = [
-            {
-                "elementType": "labels",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "administrative.province",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "lightness": -100
-                    },
-                    {
-                        "weight": 1
-                    }
-                ]
-            }
-        ];
-
-        // Set map labels.
-        this.map.set('styles', labelsOff);
+        this.geography_map.loadStateMap(this.map, data);
     }
 
     /**
@@ -126,25 +74,7 @@ export class Scene {
     geoLoadCountryMap(data) {
         this.geoRemoveGeographyElement();
         this.geoOpenMap("countries");
-
-        // Create chart.
-        this.map = new google.visualization.GeoChart(document.getElementById('map'));
-        const dataTable = google.visualization.arrayToDataTable([
-            ['Country'],
-            [data.country],
-        ]);
-
-        // Set styling, map region, and map interactivity.
-        const options = {
-            backgroundColor: '#81d4fa',
-            datalessRegionColor: '#ffd7e9',
-            defaultColor: '#8b0000',
-            region: data.region,
-            tooltip: {trigger: 'none'},
-        };
-
-        // Draw map with specified country and options.
-        this.map.draw(dataTable, options);
+        this.geography_map.loadCountryMap(this.map, data);
     }
 
     /**
@@ -169,34 +99,7 @@ export class Scene {
     geoCity(data) {
         this.geoRemoveGeographyCityMenu();
         this.geoOpenMap("city");
-
-        // Create map.
-        this.map = new google.maps.StreetViewPanorama(
-            document.getElementById("map"),
-            {
-                position: {
-                    lat: data.lat,
-                    lng: data.lng
-                },
-                pov: {
-                    heading: data.heading,
-                    pitch: 0
-                },
-                zoom: 1,
-                disableDefaultUI: true
-            }
-        );
-
-        let back = document.createElement("button");
-        back.classList.add("map", "btn", "btn-sm", "btn-danger", "text-dark",
-            "fixed-top", "rounded-circle", "font-weight-bold");
-        back.id = "geo-back";
-        back.innerText = "x";
-        this.game.appendChild(back);
-        back.onclick = function() {
-            window.interactiveCanvas.sendTextQuery('Close map');
-            back.remove();
-        };
+        this.geography_map.loadCityMap(this.map, data, game);
     }
 
     geoForward() {
