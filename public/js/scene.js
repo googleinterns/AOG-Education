@@ -188,7 +188,9 @@ export class Scene {
         );
 
         let back = document.createElement("button");
-        back.classList.add("map", "btn", "btn-dark", "fixed-top");
+        back.classList.add("map", "btn", "btn-sm", "btn-danger", "text-dark",
+            "fixed-top", "rounded-circle", "font-weight-bold");
+        back.id = "geo-back";
         back.innerText = "x";
         this.game.appendChild(back);
         back.onclick = function() {

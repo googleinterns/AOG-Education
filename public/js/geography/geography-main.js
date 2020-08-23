@@ -4,7 +4,7 @@ export class GeographyMain {
 
     createCard(cat, backgroundColor, textColor) {
         let card = document.createElement("div");
-        card.classList.add("card", backgroundColor, textColor, "text-center", "p-5");
+        card.classList.add("card", "geo-category-card", backgroundColor, textColor, "text-center", "p-4");
         this.menu.appendChild(card);
 
         let cardText = document.createElement("h4");

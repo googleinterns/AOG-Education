@@ -28,7 +28,7 @@ export class GeographyCity {
 
     createCard(landmark, city) {
         let card = document.createElement("div");
-        card.classList.add("card", "bg-primary", "text-white", "text-center", "p-3");
+        card.classList.add("card", "geo-city-card", "bg-primary", "text-white", "text-center", "p-2");
         this.menu.appendChild(card);
       
         let cardTitle = document.createElement("h4");
