@@ -1,4 +1,6 @@
 handlers:
+    - name: create_user
+    - name: system_error
     - name: welcome
     - name: aog_instructions
     - name: aog_main_menu_selection

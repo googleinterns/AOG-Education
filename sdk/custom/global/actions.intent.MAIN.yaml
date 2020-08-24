@@ -1,3 +1,1 @@
-handler:
-    webhookHandler: welcome
-transitionToScene: aog_main_menu
+transitionToScene: auth

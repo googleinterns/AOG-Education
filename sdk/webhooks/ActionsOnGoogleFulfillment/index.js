@@ -2,22 +2,73 @@ const { conversation, Canvas } = require("@assistant/conversation");
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
+const auth = admin.auth();
+const config = require("./config");
 const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 
 const INSTRUCTIONS = "Hello user, This is AOG Education.";
 
-const app = conversation({ debug: true });
+// The Client Id of the Actions Project (set it in the env file).
+const CLIENT_ID = config.keys.clientID;
+
+const app = conversation({ debug: true, clientId: CLIENT_ID });
 
 /**
  * AOG Education Global Handlers
  */
-app.handle("welcome", (conv) => {
+
+// This handler is called after the user has successfully linked their account.
+// Saves the user name in a session param to use it in dialogs, and inits the
+// Firestore db to store orders for the user.
+app.handle("create_user", async (conv) => {
+    const payload = conv.user.params.tokenPayload;
+    // write user name in session to use in dialogs
+    conv.user.params.name = payload.given_name;
+    const email = payload.email;
+    if (email) {
+        try {
+            conv.user.params.uid = (await auth.getUserByEmail(email)).uid;
+        } catch (e) {
+            if (e.code !== "auth/user-not-found") {
+                throw e;
+            }
+            // If the user is not found, create a new Firebase auth user
+            // using the email obtained from the Google Assistant
+            conv.user.params.uid = (await auth.createUser({ email })).uid;
+        }
+    }
+});
+
+// Used to reset the slot for account linking status to allow the user to try
+// again if a system or network error occurred.
+app.handle("system_error", async (conv) => {
+    conv.session.params.AccountLinkingSlot = "";
+});
+
+app.handle("welcome", async (conv) => {
     if (!conv.device.capabilities.includes("INTERACTIVE_CANVAS")) {
         conv.add("Sorry, this device does not support Interactive Canvas!");
         conv.scene.next.name = "actions.page.END_CONVERSATION";
         return;
     }
-    conv.add("Welcome User, thank you for choosing AOG Education");
+    const payload = conv.user.params.tokenPayload;
+    const name = payload.given_name;
+
+    if (conv.user.params.uid == undefined) {
+        const email = payload.email;
+        if (email) {
+            try {
+                conv.user.params.uid = (await auth.getUserByEmail(email)).uid;
+            } catch (e) {
+                if (e.code !== "auth/user-not-found") {
+                    throw e;
+                }
+                conv.user.params.uid = (await auth.createUser({ email })).uid;
+            }
+        }
+    }
+
+    conv.add(`Welcome ${name}, thank you for choosing AOG Education`);
     conv.add(
         new Canvas({
             url: "https://step-capstone.web.app",
