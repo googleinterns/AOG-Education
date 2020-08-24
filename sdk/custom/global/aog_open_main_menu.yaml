@@ -1,0 +1,3 @@
+handler:
+    webhookHandler: aog_open_main_menu
+transitionToScene: aog_main_menu
