@@ -11,6 +11,7 @@ export class ReadingMain{
   text = new Text();
 
   constructor() {
+    this.view.setAttribute("id", "reading");
     this.view.appendChild(this.library.getLibrary());
     this.view.appendChild(this.text.getText());
     this.openLibrary();
