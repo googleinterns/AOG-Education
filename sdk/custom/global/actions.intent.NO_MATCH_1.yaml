@@ -5,3 +5,4 @@ handler:
                   firstSimple:
                       variants:
                           - speech: Sorry, I didn't catch that. Can you try again?
+    webhookHandler: empty

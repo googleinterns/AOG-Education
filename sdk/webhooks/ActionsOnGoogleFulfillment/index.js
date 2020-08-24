@@ -25,6 +25,10 @@ app.handle("welcome", (conv) => {
   );
 });
 
+app.handle("empty", (conv) => {
+    conv.add(new Canvas());
+});
+
 app.handle("fallback", (conv) => {
   conv.add(`I don't understand. Ask for help to get assistance.`);
   conv.add(new Canvas());
