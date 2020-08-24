@@ -1,3 +1,4 @@
 custom:
-  actions.intent.MAIN: {}
-  actions.intent.PLAY_GAME: {}
+    actions.intent.MAIN: {}
+    actions.intent.PLAY_GAME: {}
+    aog_open_main_menu: {}
