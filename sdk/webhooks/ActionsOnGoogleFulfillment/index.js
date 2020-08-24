@@ -248,9 +248,17 @@ app.handle("geo_check_answer", (conv) => {
         conv.session.params.geo_correct.push(answer);
         conv.add(`${answer} is correct!`);
         geo_functions.removeQuestion(conv);
+
+        conv.session.params.geo_try = 0;
     } else {
         conv.session.params.geo_incorrect.push(answer);
-        conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
+        if (conv.session.params.geo_try == 0) {
+            conv.add("Try again. It begins with the letter " + answer.charAt(0) + ".");
+            conv.session.params.geo_try++;
+        } else {
+            conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
+            conv.session.params.geo_try = 0;
+        }
     }
     conv.add(new Canvas());
 });

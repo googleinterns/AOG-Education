@@ -91,6 +91,7 @@ function setup(conv) {
     conv.session.params.geo_num_questions_left = 2;
     conv.session.params.geo_correct = [];
     conv.session.params.geo_incorrect = [];
+    conv.session.params.geo_try = 0;
 }
 
 /**
