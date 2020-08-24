@@ -4,6 +4,7 @@ handlers:
     - name: welcome
     - name: aog_instructions
     - name: aog_main_menu_selection
+    - name: empty
     - name: aog_open_main_menu
     - name: fallback
     # Language Section
