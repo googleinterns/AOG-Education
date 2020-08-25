@@ -105,7 +105,8 @@ app.handle("geo_us_capital", (conv) => {
     conv.add(new Canvas({
         data: {
             command: "GEO_CAPITAL",
-            name: conv.session.params.geo_name
+            name: conv.session.params.geo_name,
+            answer: geo_functions.getCorrectAnswer(conv)
         }
     }));
 });
@@ -120,7 +121,8 @@ app.handle("geo_world_capital", (conv) => {
     conv.add(new Canvas({
         data: {
             command: "GEO_CAPITAL",
-            name: conv.session.params.geo_name
+            name: conv.session.params.geo_name,
+            answer: geo_functions.getCorrectAnswer(conv)
         }
     }));
 });
@@ -246,18 +248,17 @@ app.handle("geo_check_answer", (conv) => {
     // Remove question from question bank if user answered correctly.
     if (geo_functions.isCorrect(conv, answer)) {
         conv.session.params.geo_correct.push(answer);
-        conv.add(`${answer} is correct!`);
         geo_functions.removeQuestion(conv);
-
         conv.session.params.geo_try = 0;
+        conv.add(`${answer} is correct!`);
     } else {
         conv.session.params.geo_incorrect.push(answer);
         if (conv.session.params.geo_try == 0) {
-            conv.add("Try again. It begins with the letter " + answer.charAt(0) + ".");
             conv.session.params.geo_try++;
+            conv.add("Try again. It begins with the letter " + answer.charAt(0) + ".");
         } else {
-            conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
             conv.session.params.geo_try = 0;
+            conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
         }
     }
     conv.add(new Canvas());

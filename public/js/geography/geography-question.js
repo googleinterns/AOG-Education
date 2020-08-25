@@ -1,26 +1,49 @@
 export class GeographyQuestion {
-    question = document.createElement("div");
-    text = document.createElement("h3");
+    container = document.createElement("div");
+    cardInner = document.createElement("div");
 
     /**
      * Creates main scene with one text element.
      */
     constructor() {
-        this.question.classList.add("container", "h-100");
+        this.container.classList.add("h-100", "justify-content-center", "d-flex", "align-items-center");
 
-        this.text.classList.add("row", "h-100", "justify-content-center", "align-items-center", "geo");
+        this.cardInner.classList.add("geo", "h-50", "w-50", "card-inner");
+        this.container.appendChild(this.cardInner);
 
-        this.question.appendChild(this.text);
+        this.front = this.createCard("front");
+        this.back = this.createCard("back");
+    }
+
+    flipCard() {
+        this.cardInner.classList.toggle("flip-card-inner");
+    }
+
+    createCard(side) {
+		let card = document.createElement("div");
+        card.classList.add("geo", "h-100", "card", "bg-light", "border-primary", side, "rounded");
+        this.cardInner.appendChild(card);
+        
+        let cardBody = document.createElement("div");
+        cardBody.classList.add("card-body", "ml-3");
+        card.appendChild(cardBody);
+        
+        let text = document.createElement("h3");
+        text.classList.add("geo", "row", "h-100", "align-items-center");
+        cardBody.appendChild(text);
+        
+        return text;
     }
 
     /**
      * Changes text displayed based on scene.
      * @param {*} name of state or country
      */
-    getQuestion(name) {
+    getQuestion(name, answer) {
         if (name) {
-            this.text.innerText = `What is the capital of ${name}?`;
+            this.front.innerText = `What is the capital of ${name}?`;
+            this.back.innerText = answer;
         }
-        return this.question;
+        return this.container;
     }
 }

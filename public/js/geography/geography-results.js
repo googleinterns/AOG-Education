@@ -45,7 +45,7 @@ export class GeographyResults {
         div.appendChild(this.getList(categoryClass, list));
     }
 
-    getGeographyResults() {
+    getResults() {
         return this.geographyResults;
     }
 
@@ -54,7 +54,7 @@ export class GeographyResults {
      * @param {*} correct is the list of questions answered correctly
      * @param {*} incorrect is the list of questions answered incorrectly
      */
-    setGeographyResults(correct, incorrect) {
+    setResults(correct, incorrect) {
         // Reset HTML.
         this.geographyResults.innerHTML = '';
 

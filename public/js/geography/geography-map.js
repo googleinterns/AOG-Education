@@ -9,7 +9,7 @@ export class GeographyMap {
      * Returns map with height styled according to question category.
      * @param {*} map is question category
      */
-    getGeographyMap(map) {
+    getMap(map) {
         if (map == "states" || map == "city") {
             this.geographyMap.style.height = "100%";
         } else if (map == "countries") {

@@ -46,7 +46,7 @@ export class GeographyCity {
         };
     }
 
-    getGeographyCityMenu(cities) {
+    getCityMenu(cities) {
         if (cities) {
             this.menu.innerHTML = '';
             this.menu.classList.add("card-columns", "h-100", "mt-3");

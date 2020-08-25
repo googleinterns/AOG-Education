@@ -24,7 +24,7 @@ export class Scene {
 
     openGeography() {
         this.game.removeChild(this.menu.getMenu());
-        this.game.appendChild(this.geography.getGeographyElement());
+        this.game.appendChild(this.geography.getElement());
     }
 
     openLanguage() {
@@ -42,27 +42,27 @@ export class Scene {
      */
 
     geoMenu() {
-        this.geoRemoveGeographyResults();
-        this.geoRemoveGeographyCityMenu();
-        this.game.appendChild(this.geography.getGeographyElement());
+        this.geoRemoveResults();
+        this.geoRemoveCityMenu();
+        this.game.appendChild(this.geography.getElement());
     }
 
     /**
      * Displays capital question.
      * @param {*} data contains name of state or country in question
      */
-    geoCapital(data) {
-        this.geoRemoveGeographyElement();
-        this.geoRemoveGeographyQuestion();
-        this.game.appendChild(this.geography_question.getQuestion(data.name));
-    }
+    geoCapital = async (data) => {
+        this.geoRemoveElement();
+        await this.geoRemoveQuestion();
+        this.game.appendChild(this.geography_question.getQuestion(data.name, data.answer));
+    };
 
     /**
      * Loads map corresponding to state question.
      * @param {*} data stores the coordinates of the state
      */
     geoLoadStateMap(data) {
-        this.geoRemoveGeographyElement();
+        this.geoRemoveElement();
         this.geoOpenMap("states");
         this.geography_map.loadStateMap(this.map, data);
     }
@@ -72,7 +72,7 @@ export class Scene {
      * @param {*} data stores the country and M49 region
      */
     geoLoadCountryMap(data) {
-        this.geoRemoveGeographyElement();
+        this.geoRemoveElement();
         this.geoOpenMap("countries");
         this.geography_map.loadCountryMap(this.map, data);
     }
@@ -80,16 +80,16 @@ export class Scene {
     /**
      * @param {*} data stores the number of questions answered correctly and incorrectly.
      */
-    geoShowResults(data) {
-        this.geoRemoveGeographyQuestion();
+    async geoShowResults(data) {
+        await this.geoRemoveQuestion();
         this.geoRemoveMap();
-        this.game.appendChild(this.geography_results.setGeographyResults(data.correct, data.incorrect));
+        this.game.appendChild(this.geography_results.setResults(data.correct, data.incorrect));
     }
 
     geoChooseCity(data) {
-        this.geoRemoveGeographyElement();
+        this.geoRemoveElement();
         this.geoRemoveMap();
-        this.game.appendChild(this.geography_city.getGeographyCityMenu(data.cities));
+        this.game.appendChild(this.geography_city.getCityMenu(data.cities));
     }
 
     /**
@@ -97,7 +97,7 @@ export class Scene {
      * @param {*} data stores latitude and longitude
      */
     geoCity(data) {
-        this.geoRemoveGeographyCityMenu();
+        this.geoRemoveCityMenu();
         this.geoOpenMap("city");
         this.geography_map.loadCityMap(this.map, data, game);
     }
@@ -127,38 +127,45 @@ export class Scene {
     }
 
     geoOpenMap(map) {
-        if (!this.game.contains(this.geography_map.getGeographyMap())) {
-            this.game.appendChild(this.geography_map.getGeographyMap(map));
+        if (!this.game.contains(this.geography_map.getMap())) {
+            this.game.appendChild(this.geography_map.getMap(map));
         }
     }
 
     geoRemoveMap() {
-        if (this.game.contains(this.geography_map.getGeographyMap())) {
-            this.game.removeChild(this.geography_map.getGeographyMap());
+        if (this.game.contains(this.geography_map.getMap())) {
+            this.game.removeChild(this.geography_map.getMap());
         }
     }
 
-    geoRemoveGeographyCityMenu() {
-        if (this.game.contains(this.geography_city.getGeographyCityMenu())) {
-            this.game.removeChild(this.geography_city.getGeographyCityMenu());
+    geoRemoveCityMenu() {
+        if (this.game.contains(this.geography_city.getCityMenu())) {
+            this.game.removeChild(this.geography_city.getCityMenu());
         }
     }
 
-    geoRemoveGeographyElement() {
-        if (this.game.contains(this.geography.getGeographyElement())) {
-            this.game.removeChild(this.geography.getGeographyElement());
+    geoRemoveElement() {
+        if (this.game.contains(this.geography.getElement())) {
+            this.game.removeChild(this.geography.getElement());
         }
     }
 
-    geoRemoveGeographyResults() {
-        if (this.game.contains(this.geography_results.getGeographyResults())) {
-            this.game.removeChild(this.geography_results.getGeographyResults());
+    geoRemoveResults() {
+        if (this.game.contains(this.geography_results.getResults())) {
+            this.game.removeChild(this.geography_results.getResults());
         }
     }
 
-    geoRemoveGeographyQuestion() {
+    async geoRemoveQuestion() {
         if (this.game.contains(this.geography_question.getQuestion())) {
+            this.geography_question.flipCard();
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    resolve();
+                }, 2500);
+            });
             this.game.removeChild(this.geography_question.getQuestion());
+            this.geography_question.flipCard();
         }
     }
 

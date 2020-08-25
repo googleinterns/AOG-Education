@@ -38,7 +38,7 @@ export class GeographyMain {
         this.createCard("Visit a City", "bg-secondary", "text-white");
     }
 
-    getGeographyElement() {
+    getElement() {
         return this.menuDiv;
     }
 }
