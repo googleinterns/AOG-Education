@@ -158,6 +158,9 @@ app.handle("geo_country", (conv) => {
     }));
 });
 
+/**
+ * Have user choose a place to visit.
+ */
 app.handle("geo_choose_city", (conv) => {
     conv.add("Choose a place to visit.");
     conv.add(new Canvas({
@@ -168,11 +171,20 @@ app.handle("geo_choose_city", (conv) => {
     }));
 });
 
+/**
+ * Load street view map for place user has chosen. Give instructions for
+ * navigation using voice commands.
+ */
 app.handle("geo_city", (conv) => {
+    // Place is available if user said the name of a city, country, or
+    // landmark that is available.
     let city = geo_cities.find(element =>
         conv.intent.params.answer.resolved.includes(element[0]) ||
         conv.intent.params.answer.resolved.includes(element[1]) ||
         conv.intent.params.answer.resolved.includes(element[2]));
+
+    // If place is available, display it. Otherwise, let user choose a different
+    // place.
     if (city == undefined) {
         conv.add("Sorry, we do not support that city.");
         conv.add(new Canvas());
@@ -191,6 +203,10 @@ app.handle("geo_city", (conv) => {
     }
 });
 
+/**
+ * Shifts street view map up or down, turns it left or right, or moves it
+ * forward or backward.
+ */
 app.handle("geo_move", (conv) => {
     switch (conv.intent.params.answer.resolved) {
         case "up":

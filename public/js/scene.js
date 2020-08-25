@@ -78,6 +78,7 @@ export class Scene {
     }
 
     /**
+     * Displays results of the questions the user answered.
      * @param {*} data stores the number of questions answered correctly and incorrectly.
      */
     async geoShowResults(data) {
@@ -86,6 +87,10 @@ export class Scene {
         this.game.appendChild(this.geography_results.setResults(data.correct, data.incorrect));
     }
 
+    /**
+     * Loads page which allows the user to choose a city to visit.
+     * @param {*} data stores the list of available cities.
+     */
     geoChooseCity(data) {
         this.geoRemoveElement();
         this.geoRemoveMap();
@@ -158,13 +163,17 @@ export class Scene {
 
     async geoRemoveQuestion() {
         if (this.game.contains(this.geography_question.getQuestion())) {
+            // Flip card to reveal answer, then wait for 2.5 seconds.
             this.geography_question.flipCard();
             await new Promise(resolve => {
                 setTimeout(() => {
                     resolve();
                 }, 2500);
             });
+    
             this.game.removeChild(this.geography_question.getQuestion());
+
+            // Flip card again to return to the front side.
             this.geography_question.flipCard();
         }
     }

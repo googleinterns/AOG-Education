@@ -1,4 +1,6 @@
 module.exports.countries = [
+    // country, country capital, country region
+
     ['Nigeria', 'Abuja', '002'],
     ['Ethiopia', 'Addis Ababa', '002'],
     ['Turkey', 'Ankara', '145'],

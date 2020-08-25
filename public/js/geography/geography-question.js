@@ -3,7 +3,7 @@ export class GeographyQuestion {
     cardInner = document.createElement("div");
 
     /**
-     * Creates main scene with one text element.
+     * Creates geography question cards.
      */
     constructor() {
         this.container.classList.add("h-100", "justify-content-center", "d-flex", "align-items-center");
@@ -15,19 +15,29 @@ export class GeographyQuestion {
         this.back = this.createCard("back");
     }
 
+    /**
+     * Flips card to reveal answer.
+     */
     flipCard() {
         this.cardInner.classList.toggle("flip-card-inner");
     }
 
+    /**
+     * Creates question card.
+     * @param {*} side is the question ("front") or answer ("back")
+     */
     createCard(side) {
+        // Create card.
 		let card = document.createElement("div");
         card.classList.add("geo", "h-100", "card", "bg-light", "border-primary", side, "rounded");
         this.cardInner.appendChild(card);
-        
+
+        // Create card body.
         let cardBody = document.createElement("div");
         cardBody.classList.add("card-body", "ml-3");
         card.appendChild(cardBody);
-        
+
+        // Add text.
         let text = document.createElement("h3");
         text.classList.add("geo", "row", "h-100", "align-items-center");
         cardBody.appendChild(text);
@@ -38,6 +48,7 @@ export class GeographyQuestion {
     /**
      * Changes text displayed based on scene.
      * @param {*} name of state or country
+     * @param {*} answer of question
      */
     getQuestion(name, answer) {
         if (name) {

@@ -18,6 +18,11 @@ export class GeographyMap {
         return this.geographyMap;
     }
 
+    /**
+     * Loads map centered around state in question.
+     * @param {*} map is the map div
+     * @param {*} data contains coordinates of the state
+     */
     loadStateMap(map, data) {
         // Set map center and zoom.
         const coords = data.coords;
@@ -73,6 +78,11 @@ export class GeographyMap {
         map.set('styles', labelsOff);
     }
 
+    /**
+     * Loads map centered around country in question.
+     * @param {*} map is the map div
+     * @param {*} data contains coordinates of the country
+     */
     loadCountryMap(map, data) {
         // Create chart.
         map = new google.visualization.GeoChart(document.getElementById('map'));
@@ -94,6 +104,12 @@ export class GeographyMap {
         map.draw(dataTable, options);
     }
 
+    /**
+     * Loads street view map of a landmark.
+     * @param {*} map is the map div
+     * @param {*} data contains coordinates and heading of the landmark
+     * @param {*} game is the game div
+     */
     loadCityMap(map, data, game) {
         // Create map.
         map = new google.maps.StreetViewPanorama(
@@ -112,6 +128,7 @@ export class GeographyMap {
             }
         );
 
+        // Add back button.
         let back = document.createElement("button");
         back.classList.add("map", "btn", "btn-sm", "btn-danger", "text-dark",
             "fixed-top", "rounded-circle", "font-weight-bold");
@@ -124,48 +141,88 @@ export class GeographyMap {
         };
     }
 
+    /**
+     * Set heading of the street view map.
+     * @param {*} map is the map div
+     * @param {*} headingChange is the number of degress the heading will change.
+     */
     setHeading(map, headingChange) {
         map.setPov({heading: (map.pov.heading + headingChange) % 360, pitch: map.pov.pitch, zoom: map.zoom});
     }
-    
+
+    /**
+     * Set pitch of the street view map.
+     * @param {*} map is the map div
+     * @param {*} pitchChange is the number of degress the pitch will change.
+     */
     setPitch(map, pitchChange) {
         let pitch = map.pov.pitch + pitchChange;
         if (pitch > 90)	pitch = 90;
         else if (pitch < -90)	pitch = -90;
         map.setPov({heading: map.pov.heading, pitch: pitch, zoom: map.zoom});
     }
-    
+
+    /**
+     * Turn street view map to the left by 45 degrees.
+     * @param {*} map is the map div
+     */
     left(map) {
         this.setHeading(map, -45);
     }
-    
+
+    /**
+     * Turn street view map to the right by 45 degrees.
+     * @param {*} map is the map div
+     */
     right(map) {
         this.setHeading(map, 45);
     }
-    
+
+    /**
+     * Shift street view map up by 30 degrees.
+     * @param {*} map is the map div
+     */
     up(map) {
         this.setPitch(map, 30);
     }
-    
+
+    /**
+     * Shift street view map down by 30 degrees.
+     * @param {*} map is the map div
+     */
     down(map) {
         this.setPitch(map, -30);
     }
-    
+
+    /**
+     * Calculate the difference between the current map heading and the
+     * link map heading.
+     * @param {*} map is the map div
+     * @param {*} link is the another map div
+     */
     difference(map, link) {
         let diff = Math.abs(map.pov.heading % 360 - link.heading);
         if (diff > 180) diff = Math.abs(360 - diff);
            
         return diff;
     }
-    
+
+    /**
+     * Move forward or backward in street view map.
+     * @param {*} map is the map div
+     * @param {*} factor is 1 to move forward or -1 to move backward
+     */
     move(map, factor) {
         let cur;
         let links = map.getLinks();
+
+        // Find the direction to move in.
         for (let i = 0; i < links.length; i++) {
             if (cur == undefined || (factor * this.difference(map, cur)) > (factor * this.difference(map, links[i]))) {
                 cur = links[i];
             }
         }
+
         map.setPano(cur.pano);
     }
 }
