@@ -18,7 +18,9 @@ export class Action {
           this.scene.openLanguage();
         }
       },
-
+      AOG_OPEN_MAIN_MENU: (data) => {
+        this.scene.aogOpenMainMenu();
+      },
       // AOG Education Geography Commands
       GEO_MENU: (data) => {
         this.scene.geoMenu(data);
