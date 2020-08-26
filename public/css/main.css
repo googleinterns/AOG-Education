@@ -10,8 +10,10 @@ body {
    padding: 0;
 }
 
-canvas {
-    display: block;
+#animation-canvas {
+    visibility: hidden;
+    position: fixed;
+    background-color: #fff;
 }
 
 #game {
