@@ -66,3 +66,11 @@ header {
 .next-question {
     margin-top: 42px;
 }
+
+.hide-with-space {
+    visibility: hidden;
+}
+
+.pic-table {
+    table-layout: fixed;
+}
