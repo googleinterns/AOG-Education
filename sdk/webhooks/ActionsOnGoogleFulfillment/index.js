@@ -98,132 +98,209 @@ app.handle("aog_main_menu_selection", (conv) => {
 // Load functions and state coordinates data.
 const geo_functions = require("./geography/functions");
 const geo_state_coords_file = require("./geography/state_coords");
+const geo_cities_file = require("./geography/cities");
 const geo_state_coords = geo_state_coords_file.stateCoords;
+const geo_cities = geo_cities_file.cities;
 
 app.handle("geo_setup", (conv) => {
-  geo_functions.setup(conv);
-  conv.add(
-    "Choose a category - US Capitals, World Capitals, US States, or Countries."
-  );
-  conv.add(
-    new Canvas({
-      data: {
-        command: "GEO_MENU",
-      },
-    })
-  );
+    geo_functions.setup(conv);
+    conv.add("Choose a category.");
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_MENU"
+        }
+    }));
 });
 
 /**
  * Ask US capital question.
  */
 app.handle("geo_us_capital", (conv) => {
-  conv.session.params.geo_category = "US_CAPITAL";
-  geo_functions.getQuestion(conv);
-  conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
-  conv.add(
-    new Canvas({
-      data: {
-        command: "GEO_CAPITAL",
-        name: conv.session.params.geo_name,
-      },
-    })
-  );
+    conv.session.params.geo_category = "US_CAPITAL";
+    geo_functions.getQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_CAPITAL",
+            name: conv.session.params.geo_name,
+            answer: geo_functions.getCorrectAnswer(conv)
+        }
+    }));
 });
 
 /**
  * Ask world capital question.
  */
 app.handle("geo_world_capital", (conv) => {
-  conv.session.params.geo_category = "WORLD_CAPITAL";
-  geo_functions.getQuestion(conv);
-  conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
-  conv.add(
-    new Canvas({
-      data: {
-        command: "GEO_CAPITAL",
-        name: conv.session.params.geo_name,
-      },
-    })
-  );
+    conv.session.params.geo_category = "WORLD_CAPITAL";
+    geo_functions.getQuestion(conv);
+    conv.add(`What is the capital of ${conv.session.params.geo_name}?`);
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_CAPITAL",
+            name: conv.session.params.geo_name,
+            answer: geo_functions.getCorrectAnswer(conv)
+        }
+    }));
 });
 
 /**
  * Ask US state question and load the state map in question.
  */
 app.handle("geo_state", (conv) => {
-  conv.session.params.geo_category = "STATE";
-  geo_functions.getQuestion(conv);
-  conv.add("What is the state pictured?");
-  conv.add(
-    new Canvas({
-      data: {
-        command: "GEO_LOAD_STATE_MAP",
-        coords: geo_state_coords[conv.session.params.geo_name],
-      },
-    })
-  );
+    conv.session.params.geo_category = "STATE";
+    geo_functions.getQuestion(conv);
+    conv.add("What is the state pictured?");
+    conv.add(
+        new Canvas({
+        data: {
+            command: "GEO_LOAD_STATE_MAP",
+            coords: geo_state_coords[conv.session.params.geo_name],
+        },
+        })
+    );
 });
 
 /**
  * Ask country question and load the country map in question.
  */
 app.handle("geo_country", (conv) => {
-  conv.session.params.geo_category = "COUNTRY";
-  geo_functions.getQuestion(conv);
-  conv.add("What is the country pictured?");
-  conv.add(
-    new Canvas({
-      data: {
-        command: "GEO_LOAD_COUNTRY_MAP",
-        country: conv.session.params.geo_name,
-        region: conv.session.params.geo_region,
-      },
-    })
-  );
+    conv.session.params.geo_category = "COUNTRY";
+    geo_functions.getQuestion(conv);
+    conv.add("What is the country pictured?");
+    conv.add(
+        new Canvas({
+        data: {
+            command: "GEO_LOAD_COUNTRY_MAP",
+            country: conv.session.params.geo_name,
+            region: conv.session.params.geo_region,
+        },
+        })
+    );
+});
+
+/**
+ * Have user choose a place to visit.
+ */
+app.handle("geo_choose_city", (conv) => {
+    conv.add("Choose a place to visit.");
+    conv.add(new Canvas({
+        data: {
+            command: "GEO_CHOOSE_CITY",
+            cities: geo_cities
+        }
+    }));
+});
+
+/**
+ * Load street view map for place user has chosen. Give instructions for
+ * navigation using voice commands.
+ */
+app.handle("geo_city", (conv) => {
+    // Place is available if user said the name of a city, country, or
+    // landmark that is available.
+    let city = geo_cities.find(element =>
+        conv.intent.params.answer.resolved.includes(element[0]) ||
+        conv.intent.params.answer.resolved.includes(element[1]) ||
+        conv.intent.params.answer.resolved.includes(element[2]));
+
+    // If place is available, display it. Otherwise, let user choose a different
+    // place.
+    if (city == undefined) {
+        conv.add("Sorry, we do not support that city.");
+        conv.add(new Canvas());
+        conv.scene.next.name = "geo_visit";
+    } else {
+        conv.add("To move, say forward or backward. To change directions, say "+
+                "up, down, left, or right.");
+        conv.add(new Canvas({
+            data: {
+                command: "GEO_CITY",
+                lat: city[3],
+                lng: city[4],
+                heading: city[5]
+            }
+        }));
+    }
+});
+
+/**
+ * Shifts street view map up or down, turns it left or right, or moves it
+ * forward or backward.
+ */
+app.handle("geo_move", (conv) => {
+    switch (conv.intent.params.answer.resolved) {
+        case "up":
+            conv.add("Shifting up.");
+            conv.add(new Canvas({ data: { command: "GEO_UP" } }));
+            break;
+        case "down":
+            conv.add("Shifting down.");
+            conv.add(new Canvas({ data: { command: "GEO_DOWN" } }));
+            break;
+        case "left":
+            conv.add("Turning left.");
+            conv.add(new Canvas({ data: { command: "GEO_LEFT" } }));
+            break;
+        case "right":
+            conv.add("Turning right.");
+            conv.add(new Canvas({ data: { command: "GEO_RIGHT" } }));
+            break;
+        case "forward":
+            conv.add("Moving forward.");
+            conv.add(new Canvas({ data: { command: "GEO_FORWARD" } }));
+            break;
+        case "backward":
+            conv.add("Moving backward.");
+            conv.add(new Canvas({ data: { command: "GEO_BACKWARD" } }));
+    }
 });
 
 /**
  * Load results page displaying questions answered correctly and incorrectly.
  */
 app.handle("geo_results", (conv) => {
-  conv.add(
-    new Canvas({
-      data: {
-        command: "GEO_SHOW_RESULTS",
-        correct: conv.session.params.geo_correct,
-        incorrect: conv.session.params.geo_incorrect,
-      },
-    })
-  );
+    conv.add(
+        new Canvas({
+        data: {
+            command: "GEO_SHOW_RESULTS",
+            correct: conv.session.params.geo_correct,
+            incorrect: conv.session.params.geo_incorrect,
+        },
+        })
+    );
 });
 
 /**
  * Check whether the answer is correct and display the corresponding message.
  */
 app.handle("geo_check_answer", (conv) => {
-  const answer = geo_functions.getCorrectAnswer(conv);
+    const answer = geo_functions.getCorrectAnswer(conv);
 
-  // Store question as correct or incorrect based on user's last response.
-  if (conv.session.params.geo_correct.includes(answer)) {
-    geo_functions.removeElementByValue(conv.session.params.geo_correct, answer);
-  } else if (conv.session.params.geo_incorrect.includes(answer)) {
-    geo_functions.removeElementByValue(
-      conv.session.params.geo_incorrect,
-      answer
-    );
-  }
+    // Store question as correct or incorrect based on user's last response.
+    if (conv.session.params.geo_correct.includes(answer)) {
+        geo_functions.removeElementByValue(conv.session.params.geo_correct, answer);
+    } else if (conv.session.params.geo_incorrect.includes(answer)) {
+        geo_functions.removeElementByValue(conv.session.params.geo_incorrect, answer);
+    }
 
-  // Remove question from question bank if user answered correctly.
-  if (geo_functions.isCorrect(conv, answer)) {
-    conv.session.params.geo_correct.push(answer);
-    conv.add(`${answer} is correct!`);
-    geo_functions.removeQuestion(conv);
-  } else {
-    conv.session.params.geo_incorrect.push(answer);
-    conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
-  }
-  conv.add(new Canvas());
+    // Remove question from question bank if user answered correctly.
+    if (geo_functions.isCorrect(conv, answer)) {
+        conv.session.params.geo_correct.push(answer);
+        geo_functions.removeQuestion(conv);
+        conv.session.params.geo_try = 0;
+        conv.add(`${answer} is correct!`);
+    } else {
+        conv.session.params.geo_incorrect.push(answer);
+        if (conv.session.params.geo_try == 0) {
+            conv.session.params.geo_try++;
+            conv.add("Try again. It begins with the letter " + answer.charAt(0) + ".");
+        } else {
+            conv.session.params.geo_try = 0;
+            conv.add(`Sorry, that's incorrect. The correct answer is ${answer}.`);
+        }
+    }
+    conv.add(new Canvas());
 });
 
 /**

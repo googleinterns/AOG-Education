@@ -45,7 +45,7 @@ export class GeographyResults {
         div.appendChild(this.getList(categoryClass, list));
     }
 
-    getGeographyResults() {
+    getResults() {
         return this.geographyResults;
     }
 
@@ -54,7 +54,7 @@ export class GeographyResults {
      * @param {*} correct is the list of questions answered correctly
      * @param {*} incorrect is the list of questions answered incorrectly
      */
-    setGeographyResults(correct, incorrect) {
+    setResults(correct, incorrect) {
         // Reset HTML.
         this.geographyResults.innerHTML = '';
 
@@ -65,7 +65,7 @@ export class GeographyResults {
 
         // Create left panel.
         let resultsLeft = document.createElement("div");
-        resultsLeft.classList.add("col-sm-4", "geo");
+        resultsLeft.classList.add("col", "geo");
         results.appendChild(resultsLeft);
 
         // Add text with number of questions user answered correctly and incorrectly.
@@ -80,14 +80,14 @@ export class GeographyResults {
         resultsHeader.innerText = `You got ${numCorrect} ${correctQuestions} correct and ${numIncorrect} ${incorrectQuestions} incorrect.`
         resultsLeft.appendChild(resultsHeader);
 
-        // Add button which redirects user to main menu.
+        // Add button which redirects user to main geography menu.
         let button = document.createElement("button");
-        button.classList.add("btn", "btn-primary");
+        button.classList.add("btn", "btn-primary", "mt-4");
         let buttonText = document.createElement("h4");
-        buttonText.innerHTML = "Main Menu";
+        buttonText.innerHTML = "Home";
         button.appendChild(buttonText);
         button.onclick = function() {
-            window.interactiveCanvas.sendTextQuery('Main Menu');
+            window.interactiveCanvas.sendTextQuery('Geography Home');
         };
         resultsLeft.append(button);
 
