@@ -75,6 +75,55 @@ header {
     table-layout: fixed;
 }
 
+/* Chat Room */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    width: 5px;
+    background: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 1em;
+    background-color: #ddd;
+    outline: 1px solid slategrey;
+    border-radius: 1rem;
+}
+
+.text-small {
+    font-size: 0.9rem;
+}
+
+.messages-box,
+.chat-box {
+    height: 560px;
+    overflow-y: scroll;
+}
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+input::placeholder {
+    font-size: 0.9rem;
+    color: #999;
+}
+
+.chat-box-container {
+    width: 100%;
+}
+
+.news-img {
+    width: 70%;
+}
+
+.news-title {
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
 /* Geography Section */
 path {
     stroke: #555;

@@ -6,6 +6,8 @@ import { LanguageMain } from "./language/language-main.js";
 import { ReadingMain } from "./reading/ReadingMain.js";
 import { OnePicOneWord } from "./language/one_pic_one_word.js";
 import { OnePicMultipleWords } from "./language/one_pic_multiple_words.js";
+import { Conversation } from "./language/conversation.js";
+import { Vocabulary } from "./language/vocab.js";
 
 export class Scene {
     menu = new AogMainMenu();
@@ -15,6 +17,8 @@ export class Scene {
     language = new LanguageMain();
     onePicOneWord = new OnePicOneWord();
     onePicMultipleWords = new OnePicMultipleWords();
+    conversation = new Conversation();
+    vocabulary = new Vocabulary();
     reading = new ReadingMain();
     game = document.getElementById("game");
 
@@ -200,6 +204,10 @@ export class Scene {
 
         this.onePicOneWord.showSpanishWord();
         this.onePicOneWord.setWord(data.spanish, "SPANISH");
+        
+        if (data.attempts != undefined) {
+            this.onePicOneWord.setAttempts(data.attempts);
+        }
     }
 
     /**
@@ -207,9 +215,13 @@ export class Scene {
      * @param {*} data stores the spanish word
      */
     onePicOneWordShowSpanish(data) {
-        const translatedWord = String(data);
+        const translatedWord = String(data.word);
         this.onePicOneWord.showSpanishWord();
         this.onePicOneWord.setWordValue(translatedWord, "spanish-word");
+
+        if (data.attempts != undefined) {
+            this.onePicOneWord.setAttempts(data.attempts);
+        }
     }
 
     /**
@@ -218,6 +230,19 @@ export class Scene {
      */
     updateOnePicAttempts(data) {
         this.onePicOneWord.setAttempts(data);
+    }
+
+    /**
+     * Provides a hint to the user in the form of a letter
+     * @param {*} data stores the information to be updated on the screen
+     */
+    onePicShowHint(data) {
+        this.onePicOneWord.setAttempts(data.attempts);
+        if (data.scene == "lang_one_pic") {
+            this.onePicOneWord.setWordValue(data.word, "english-word");
+        } else if (data.scene == "lang_one_pic_translation") {
+            this.onePicOneWord.setWordValue(data.word, "spanish-word");
+        }
     }
 
     /**
@@ -291,6 +316,56 @@ export class Scene {
     }
 
     /**
+     * Removes the menu and adds the conversation element
+     * @param {*} data stores the message information to be shown at the start
+     */
+    startConversation(data) {
+        if (this.game.contains(this.language.getLanguageElement()))
+            this.game.removeChild(this.language.getLanguageElement());
+
+        this.game.appendChild(this.conversation.getConversation());
+        this.conversation.appendMessage(data.sender, data.text);
+    }
+
+    /**
+     * Adds a regular message to the conversation
+     * @param {*} data stores the message information to be shown 
+     */
+    addConversationMessage(data) {
+        this.conversation.appendMessage(
+            false,
+            data.receiverMessage,
+            data.receiverImage
+        );
+        this.conversation.appendMessage(true, data.senderMessage);
+    }
+
+    /**
+     * Adds a what the user has searched to the conversation
+     * @param {*} data stores the message information to be shown 
+     */
+    addConversationSearchMessage(data) {
+        this.conversation.appendMessage(
+            false,
+            data.receiverMessage,
+            data.receiverImage
+        );
+        this.conversation.appendSearchMessage(data.results, data.senderMessage);
+    }
+
+    /**
+     * Opens the list of words that the user has translated
+     * @param {*} data stores the words to be shown
+     */
+    openVocab(data) {
+        if (this.game.contains(this.language.getLanguageElement()))
+            this.game.removeChild(this.language.getLanguageElement());
+
+        this.game.appendChild(this.vocabulary.getWords());
+        this.vocabulary.setWords(data);
+    }
+
+    /**
      * Returns to the main menu from the current game session
      * @param {*} scene so that the correct session can be removed before
      * showing the menu
@@ -303,6 +378,10 @@ export class Scene {
             scene == "lang_multiple_words_translation"
         ) {
             this.game.removeChild(this.onePicMultipleWords.getQuestion());
+        } else if (scene == "lang_conversation") {
+            this.game.removeChild(this.conversation.getConversation());
+        } else if (scene == "lang_vocab") {
+            this.game.removeChild(this.vocabulary.getWords());
         }
         this.game.appendChild(this.language.getLanguageElement());
     }

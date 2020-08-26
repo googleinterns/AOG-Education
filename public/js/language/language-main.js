@@ -18,6 +18,7 @@ export class LanguageMain {
         menuRow.appendChild(this.createMenuElement("One Pic One Word"));
         menuRow.appendChild(this.createMenuElement("One Pic Multiple Words"));
         menuRow.appendChild(this.createMenuElement("Vocabulary"));
+        menuRow.appendChild(this.createMenuElement("Conversation"));
         this.languageElement.appendChild(menuRow);
     }
 
