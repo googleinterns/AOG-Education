@@ -1,7 +1,7 @@
 conditionalEvents:
-- condition: session.params.geo_num_questions_left == 0
+- condition: session.params.geo_num_questions_left == 0 && session.params.geo_try == 0
   transitionToScene: geo_results
-- condition: session.params.geo_num_questions_left > 0
+- condition: session.params.geo_num_questions_left > 0 && session.params.geo_try == 0
   handler:
     webhookHandler: geo_state
 

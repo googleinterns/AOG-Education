@@ -1,0 +1,10 @@
+onEnter:
+  webhookHandler: geo_choose_city
+
+intentEvents:
+- intent: geo_menu
+  transitionToScene: geo_menu
+- handler:
+    webhookHandler: geo_city
+  intent: geo_answer
+  transitionToScene: geo_city

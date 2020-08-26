@@ -4,7 +4,7 @@ onEnter:
     - promptResponse:
         firstSimple:
           variants:
-          - speech: Here are your results. To return to the geography menu, say Main Menu.
+          - speech: Here are your results.
   webhookHandler: geo_results
 
 intentEvents:

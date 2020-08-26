@@ -1,6 +1,8 @@
 import { AogMainMenu } from "./global/aog-main-menu.js";
+import { GeographyCity } from "./geography/geography-city.js";
 import { GeographyMain } from "./geography/geography-main.js";
 import { GeographyMap } from "./geography/geography-map.js";
+import { GeographyQuestion } from "./geography/geography-question.js";
 import { GeographyResults } from "./geography/geography-results.js";
 import { LanguageMain } from "./language/language-main.js";
 import { ReadingMain } from "./reading/ReadingMain.js";
@@ -12,7 +14,9 @@ import { Vocabulary } from "./language/vocab.js";
 export class Scene {
     menu = new AogMainMenu();
     geography = new GeographyMain();
+    geography_city = new GeographyCity();
     geography_map = new GeographyMap();
+    geography_question = new GeographyQuestion();
     geography_results = new GeographyResults();
     language = new LanguageMain();
     onePicOneWord = new OnePicOneWord();
@@ -35,7 +39,7 @@ export class Scene {
     openGeography() {
         document.getElementById("animation-canvas").style.visibility = "hidden";
         this.game.removeChild(this.menu.getMenu());
-        this.game.appendChild(this.geography.getGeographyElement());
+        this.game.appendChild(this.geography.getElement());
     }
 
     openLanguage() {
@@ -57,125 +61,139 @@ export class Scene {
      */
 
     geoMenu() {
-        this.game.removeChild(this.geography_results.getGeographyResults());
-        this.game.appendChild(this.geography.getGeographyElement());
+        this.geoRemoveResults();
+        this.geoRemoveCityMenu();
+        this.game.appendChild(this.geography.getElement());
     }
 
     /**
      * Displays capital question.
      * @param {*} data contains name of state or country in question
      */
-    geoCapital(data) {
-        this.geoRemoveGeographyElement();
-        this.game.appendChild(this.geography.getGeographyElement(data.name));
-    }
+    geoCapital = async (data) => {
+        this.geoRemoveElement();
+        await this.geoRemoveQuestion();
+        this.game.appendChild(this.geography_question.getQuestion(data.name, data.answer));
+    };
 
     /**
      * Loads map corresponding to state question.
      * @param {*} data stores the coordinates of the state
      */
     geoLoadStateMap(data) {
-        this.geoRemoveGeographyElement();
+        this.geoRemoveElement();
         this.geoOpenMap("states");
-
-        // Set map center and zoom.
-        const coords = data.coords;
-        this.map = new google.maps.Map(document.getElementById('map'));
-        this.map.setCenter({lat: coords[0].lat, lng: coords[0].lng});
-        this.map.setZoom(5);
-
-        // Construct the polygon.
-        let polygon = new google.maps.Polygon();
-        polygon.setOptions({
-            paths: coords,
-            strokeColor: "#FF0000",
-            strokeOpacity: 0.8,
-            strokeWeight: 1,
-            fillColor: "#FF0000",
-            fillOpacity: 0.35
-        });
-        polygon.setMap(this.map);
-
-        // Remove map labels.
-        const labelsOff = [
-            {
-                "elementType": "labels",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "administrative.province",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "lightness": -100
-                    },
-                    {
-                        "weight": 1
-                    }
-                ]
-            }
-        ];
-
-        // Set map labels.
-        this.map.set('styles', labelsOff);
+        this.geography_map.loadStateMap(data);
     }
 
     /**
      * Loads map corresponding to country question.
-     * @param {*} data that stores the country and M49 region
+     * @param {*} data stores the country and M49 region
      */
     geoLoadCountryMap(data) {
-        this.geoRemoveGeographyElement();
+        this.geoRemoveElement();
         this.geoOpenMap("countries");
-
-        // Create chart.
-        this.map = new google.visualization.GeoChart(document.getElementById('map'));
-        const dataTable = google.visualization.arrayToDataTable([
-            ['Country'],
-            [data.country],
-        ]);
-
-        // Set styling, map region, and map interactivity.
-        const options = {
-            backgroundColor: '#81d4fa',
-            datalessRegionColor: '#ffd7e9',
-            defaultColor: '#8b0000',
-            region: data.region,
-            tooltip: {trigger: 'none'},
-        };
-
-        // Draw map with specified country and options.
-        this.map.draw(dataTable, options);
+        this.geography_map.loadCountryMap(data);
     }
 
     /**
-     * @param {*} data that stores the number of questions answered correctly and incorrectly.
+     * Displays results of the questions the user answered.
+     * @param {*} data stores the number of questions answered correctly and incorrectly.
      */
-    geoShowResults(data) {
-        this.geoRemoveGeographyElement();
+    async geoShowResults(data) {
+        await this.geoRemoveQuestion();
         this.geoRemoveMap();
-        this.game.appendChild(this.geography_results.setGeographyResults(data.correct, data.incorrect));
+        this.game.appendChild(this.geography_results.setResults(data.correct, data.incorrect));
+    }
+
+    /**
+     * Loads page which allows the user to choose a city to visit.
+     * @param {*} data stores the list of available cities.
+     */
+    geoChooseCity(data) {
+        this.geoRemoveElement();
+        this.geoRemoveMap();
+        this.game.appendChild(this.geography_city.getCityMenu(data.cities));
+    }
+
+    /**
+     * Loads city street view map.
+     * @param {*} data stores latitude and longitude
+     */
+    geoCity(data) {
+        this.geoRemoveCityMenu();
+        this.geoOpenMap("city");
+        this.geography_map.loadCityMap(data, game);
+    }
+
+    geoForward() {
+        this.geography_map.move(1);
+    }
+
+    geoBackward() {
+        this.geography_map.move(-1);
+    }
+
+    geoLeft() {
+        this.geography_map.left();
+    }
+
+    geoRight() {
+        this.geography_map.right();
+    }
+
+    geoUp() {
+        this.geography_map.up();
+    }
+
+    geoDown() {
+        this.geography_map.down();
     }
 
     geoOpenMap(map) {
-        if (!this.game.contains(this.geography_map.getGeographyMap())) {
-            this.game.appendChild(this.geography_map.getGeographyMap(map));
+        if (!this.game.contains(this.geography_map.getMap())) {
+            this.game.appendChild(this.geography_map.getMap(map));
         }
     }
 
     geoRemoveMap() {
-        if (this.game.contains(this.geography_map.getGeographyMap())) {
-            this.game.removeChild(this.geography_map.getGeographyMap());
+        if (this.game.contains(this.geography_map.getMap())) {
+            this.game.removeChild(this.geography_map.getMap());
         }
     }
 
-    geoRemoveGeographyElement() {
-        if (this.game.contains(this.geography.getGeographyElement())) {
-            this.game.removeChild(this.geography.getGeographyElement());
+    geoRemoveCityMenu() {
+        if (this.game.contains(this.geography_city.getCityMenu())) {
+            this.game.removeChild(this.geography_city.getCityMenu());
+        }
+    }
+
+    geoRemoveElement() {
+        if (this.game.contains(this.geography.getElement())) {
+            this.game.removeChild(this.geography.getElement());
+        }
+    }
+
+    geoRemoveResults() {
+        if (this.game.contains(this.geography_results.getResults())) {
+            this.game.removeChild(this.geography_results.getResults());
+        }
+    }
+
+    async geoRemoveQuestion() {
+        if (this.game.contains(this.geography_question.getQuestion())) {
+            // Flip card to reveal answer, then wait for 2.5 seconds.
+            this.geography_question.flipCard();
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    resolve();
+                }, 2500);
+            });
+
+            this.game.removeChild(this.geography_question.getQuestion());
+
+            // Flip card again to return to the front side.
+            this.geography_question.flipCard();
         }
     }
 
