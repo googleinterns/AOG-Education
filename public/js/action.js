@@ -3,63 +3,63 @@
  * along with its callbacks.
  */
 export class Action {
-  /**
-   * @param {*} scene which serves as a container of all visual elements
-   */
-  constructor(scene) {
-    this.canvas = window.interactiveCanvas;
-    this.scene = scene;
-    this.commands = {
+    /**
+     * @param {*} scene which serves as a container of all visual elements
+     */
+    constructor(scene) {
+        this.canvas = window.interactiveCanvas;
+        this.scene = scene;
+        this.commands = {
             // AOG Education Global Commands
             AOG_MAIN_MENU_SELECTION: (data) => {
-              if (data.selection == "geography") {
-                this.scene.openGeography();
-              } else if (data.selection == "language") {
-                this.scene.openLanguage();
-              }
+                if (data.selection == "geography") {
+                    this.scene.openGeography();
+                } else if (data.selection == "language") {
+                    this.scene.openLanguage();
+                }
             },
             AOG_OPEN_MAIN_MENU: (data) => {
-              this.scene.aogOpenMainMenu();
+                this.scene.aogOpenMainMenu();
             },
             // AOG Education Geography Commands
             GEO_MENU: (data) => {
-              this.scene.geoMenu(data);
+                this.scene.geoMenu(data);
             },
             GEO_CAPITAL: (data) => {
-              this.scene.geoCapital(data);
+                this.scene.geoCapital(data);
             },
             GEO_LOAD_STATE_MAP: (data) => {
-              this.scene.geoLoadStateMap(data);
+                this.scene.geoLoadStateMap(data);
             },
             GEO_LOAD_COUNTRY_MAP: (data) => {
-              this.scene.geoLoadCountryMap(data);
+                this.scene.geoLoadCountryMap(data);
             },
             GEO_SHOW_RESULTS: (data) => {
-              this.scene.geoShowResults(data);
+                this.scene.geoShowResults(data);
             },
             GEO_CHOOSE_CITY: (data) => {
-              this.scene.geoChooseCity(data);
+                this.scene.geoChooseCity(data);
             },
             GEO_CITY: (data) => {
-              this.scene.geoCity(data);
+                this.scene.geoCity(data);
             },
             GEO_UP: (data) => {
-              this.scene.geoUp();
+                this.scene.geoUp();
             },
             GEO_DOWN: (data) => {
-              this.scene.geoDown();
+                this.scene.geoDown();
             },
             GEO_LEFT: (data) => {
-              this.scene.geoLeft();
+                this.scene.geoLeft();
             },
             GEO_RIGHT: (data) => {
-              this.scene.geoRight();
+                this.scene.geoRight();
             },
             GEO_FORWARD: (data) => {
-              this.scene.geoForward();
+                this.scene.geoForward();
             },
             GEO_BACKWARD: (data) => {
-              this.scene.geoBackward();
+                this.scene.geoBackward();
             },
             // AOG Education Language Commands
             LANG_MENU: (data) => {
