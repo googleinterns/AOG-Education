@@ -1,5 +1,3 @@
-onEnter:
-    webhookHandler: lang_vocab_welcome
 intentEvents:
     - handler:
           webhookHandler: lang_change_game

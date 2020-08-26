@@ -373,6 +373,7 @@ app.handle("geo_check_answer", (conv) => {
 const translation = require("./language/translation");
 const imageAnalysis = require("./language/image_analysis");
 const langGameState = require("./language/lang_game_state");
+const search = require("./language/news");
 
 const LANG_INSTRUCTIONS =
     "Hello user, you can open a new level or change questions.";
@@ -385,8 +386,6 @@ const LANG_INSTRUCTIONS =
  * @param {*} value that the UI should be updated to
  */
 function langSetCanvas(conv, convText, command, value) {
-    if (String(convText).length > 0) conv.add(convText);
-
     conv.add(
         new Canvas({
             data: {
@@ -395,6 +394,7 @@ function langSetCanvas(conv, convText, command, value) {
             },
         })
     );
+    if (String(convText).length > 0) conv.add(convText);
 }
 
 /**
@@ -444,7 +444,8 @@ app.handle("lang_start_one_pic", (conv) => {
     return imageAnalysis
         .imageAnalysis(true)
         .then((value) => {
-            value.attempts = 5;
+            value.attempts = 10;
+            conv.session.params.onePicHints = [];
             conv.session.params.onePicAnswer = value.word;
             conv.session.params.onePicAnswerTranslated = value.wordTranslated;
             conv.session.params.onePicAttemptsLeft = value.attempts;
@@ -475,7 +476,8 @@ app.handle("lang_start_multiple_words", (conv) => {
     return imageAnalysis
         .imageAnalysis(false)
         .then((value) => {
-            value.attempts = 5;
+            value.attempts = 10;
+            conv.session.params.multipleWordsHints = [];
             conv.session.params.multipleWordsAnswer = value.words;
             conv.session.params.multipleWordsAnswerTranslated =
                 value.wordsTranslated;
@@ -495,11 +497,10 @@ app.handle("lang_one_pic_answer", async (conv) => {
         ? conv.intent.params.lang_words.resolved
         : null;
 
-    console.log("Intent = " + String(conv.intent.params));
     conv.add(`Ok, let's see if ${word} is correct`);
 
     const userAnswer = String(word);
-    const correctAnswer = conv.session.params.onePicAnswer;
+    const correctAnswer = String(conv.session.params.onePicAnswer);
 
     if (userAnswer.toLowerCase() == correctAnswer) {
         const convText = `That is correct! Try translating it to spanish`;
@@ -512,20 +513,66 @@ app.handle("lang_one_pic_answer", async (conv) => {
     } else {
         conv.session.params.onePicAttemptsLeft--;
 
-        if (conv.session.params.onePicAttemptsLeft == 0) {
+        const attempts = conv.session.params.onePicAttemptsLeft;
+
+        if (attempts == 0) {
             const convText = `You have ran out of attempts. The correct answers are shown below.`;
             const value = {
                 english: conv.session.params.onePicAnswer,
                 spanish: conv.session.params.onePicAnswerTranslated,
             };
             langSetCanvas(conv, convText, "LANG_ONE_PIC_SHOW_ANSWER", value);
+        } else if (attempts % 2 == 0) {
+            const hints = conv.session.params.onePicHints;
+
+            var randomIndex = Math.floor(Math.random() * correctAnswer.length);
+            while(hints.includes(randomIndex) || correctAnswer.charAt(randomIndex) == " ") {
+                randomIndex = Math.floor(Math.random() * correctAnswer.length);
+            }
+            conv.session.params.onePicHints.push(randomIndex);
+
+            if (conv.session.params.onePicHints.length == correctAnswer.length) {
+                const convText = `You have ran out of hints. The correct english word is ${correctAnswer}. Try translating it to spanish`;
+                const value = {
+                    word: correctAnswer,
+                    spanish: conv.session.params.onePicAnswerTranslated,
+                    attempts: attempts
+                };
+                langSetCanvas(conv, convText, "LANG_ONE_PIC_SHOW_ENGLISH", value);
+                conv.scene.next.name = "lang_one_pic_translation";
+                return
+            }
+
+            var hint = `${correctAnswer} : `;
+            for (var i = 0; i < correctAnswer.length; i++) {
+                if (correctAnswer.charAt(i) == " ") {
+                    hint += "&nbsp&nbsp&nbsp&nbsp";
+                } else if (conv.session.params.onePicHints.includes(i)) {
+                    hint += `${correctAnswer.charAt(i)} `
+                } else {
+                    hint += "_ ";
+                }
+            }
+
+            const convText = `That is incorrect! You can try again but here's a hint.`;
+            const value = {
+                word: hint,
+                scene: conv.scene.name,
+                attempts: attempts
+            }
+            langSetCanvas(
+                conv,
+                convText,
+                "LANG_ONE_PIC_SHOW_HINT",
+                value
+            );
         } else {
             const convText = `That is incorrect! Try again.`;
             langSetCanvas(
                 conv,
                 convText,
                 "LANG_ONE_PIC_UPDATE_ATTEMPTS",
-                conv.session.params.onePicAttemptsLeft
+                attempts
             );
         }
     }
@@ -539,7 +586,6 @@ app.handle("lang_multiple_words_answer", async (conv) => {
         ? conv.intent.params.lang_words.resolved
         : null;
 
-    console.log("Intent = " + String(conv.intent.params));
     conv.add(`Ok, let's see if ${word} is correct`);
 
     const userAnswer = String(word);
@@ -551,6 +597,7 @@ app.handle("lang_multiple_words_answer", async (conv) => {
         conv.session.params.englishWordsGuessed++;
         if (conv.session.params.englishWordsGuessed == correctAnswers.length) {
             conv.add("Sweet! Try translating these words to spanish");
+            conv.session.params.multipleWordsHints = [];
             conv.scene.next.name = "lang_multiple_words_translation";
         } else {
             conv.add(`That is a correct word`);
@@ -566,8 +613,9 @@ app.handle("lang_multiple_words_answer", async (conv) => {
         langSetCanvas(conv, "", "LANG_MULTIPLE_WORDS_SHOW_ENGLISH", value);
     } else {
         conv.session.params.multipleWordsAttemptsLeft--;
+        const attempts = conv.session.params.multipleWordsAttemptsLeft;
 
-        if (conv.session.params.multipleWordsAttemptsLeft == 0) {
+        if (attempts == 0) {
             const convText = `You have ran out of attempts. The correct answers are shown below.`;
             const value = {
                 english: conv.session.params.multipleWordsAnswer,
@@ -579,13 +627,39 @@ app.handle("lang_multiple_words_answer", async (conv) => {
                 "LANG_MULTIPLE_WORDS_SHOW_ANSWER",
                 value
             );
+        } else if (attempts % 2 == 0) {
+            conv.session.params.englishWordsGuessed++;
+            const hints = conv.session.params.multipleWordsHints;
+
+            var randomIndex = Math.floor(Math.random() * 3);
+            while(hints.includes(randomIndex)) {
+                randomIndex = Math.floor(Math.random() * 3);
+            }
+            conv.session.params.multipleWordsHints.push(randomIndex);
+
+            var convText = ""
+            if (conv.session.params.multipleWordsHints.length == 3) {
+                convText = `You have ran out of english hints. The correct english words are shown below. Try translating them to spanish`;
+                conv.session.params.multipleWordsHints = [];
+                conv.scene.next.name = "lang_multiple_words_translation";
+            } else {
+                convText = `That is incorrect! You can try again but here's a hint.`;
+            }
+
+            let value = {
+                word: correctAnswers[randomIndex],
+                index: randomIndex,
+                showSpanish: conv.session.params.multipleWordsHints.length == 3,
+                spanishWords: conv.session.params.multipleWordsAnswerTranslated,
+            };
+            langSetCanvas(conv, convText, "LANG_MULTIPLE_WORDS_SHOW_ENGLISH", value);
         } else {
             const convText = `That is incorrect! Try again.`;
             langSetCanvas(
                 conv,
                 convText,
                 "LANG_MULTIPLE_WORDS_UPDATE_ATTEMPTS",
-                conv.session.params.multipleWordsAttemptsLeft
+                attempts
             );
         }
     }
@@ -605,19 +679,84 @@ app.handle("lang_one_pic_answer_translation", (conv) => {
     const userID = conv.user.params.uid;
     const englishAnswer = conv.session.params.onePicAnswer;
 
-    const spanishAnswer = conv.session.params.onePicAnswerTranslated;
-    if (userAnswer.toLowerCase() == spanishAnswer) {
+    const correctAnswer = conv.session.params.onePicAnswerTranslated;
+    if (userAnswer.toLowerCase() == correctAnswer) {
         const convText = `That is correct! You can say "Next Question" to see something else or "Questions" to go back to the main menu.`;
         langSetCanvas(
             conv,
             convText,
             "LANG_ONE_PIC_SHOW_SPANISH",
-            spanishAnswer
+            correctAnswer
         );
-        storeTranslatedWordsToFirebase(userID, englishAnswer, spanishAnswer);
+        storeTranslatedWordsToFirebase(userID, englishAnswer, correctAnswer);
     } else {
-        conv.add(`That is incorrect! Try again.`);
-        conv.add(new Canvas());
+        conv.session.params.onePicAttemptsLeft--;
+
+        const attempts = conv.session.params.onePicAttemptsLeft;
+
+        if (attempts == 0) {
+            const convText = `You have ran out of attempts. The correct answers are shown below.`;
+            const value = {
+                english: conv.session.params.onePicAnswer,
+                spanish: conv.session.params.onePicAnswerTranslated,
+            };
+            langSetCanvas(conv, convText, "LANG_ONE_PIC_SHOW_ANSWER", value);
+        } else if (attempts % 2 == 0) {
+            const hints = conv.session.params.onePicHints;
+
+            var randomIndex = Math.floor(Math.random() * correctAnswer.length);
+            while(hints.includes(randomIndex) || correctAnswer.charAt(randomIndex) == " ") {
+                randomIndex = Math.floor(Math.random() * correctAnswer.length);
+            }
+            conv.session.params.onePicHints.push(randomIndex);
+
+            if (conv.session.params.onePicHints.length == correctAnswer.length) {
+                const convText = `You have ran out of hints. The correct spanish word is ${correctAnswer}. Try translating it to spanish`;
+                const value = {
+                    word: correctAnswer,
+                    attempts: attempts
+                };
+                langSetCanvas(
+                    conv,
+                    convText,
+                    "LANG_ONE_PIC_SHOW_SPANISH",
+                    value
+                );
+                return
+            }
+
+            var hint = `${correctAnswer} : `;
+            for (var i = 0; i < correctAnswer.length; i++) {
+                if (correctAnswer.charAt(i) == " ") {
+                    hint += "&nbsp&nbsp&nbsp&nbsp";
+                } else if (conv.session.params.onePicHints.includes(i)) {
+                    hint += `${correctAnswer.charAt(i)} `
+                } else {
+                    hint += "_ ";
+                }
+            }
+
+            const convText = `That is incorrect! You can try again but here's a hint.`;
+            const value = {
+                word: hint,
+                scene: conv.scene.name,
+                attempts: attempts
+            }
+            langSetCanvas(
+                conv,
+                convText,
+                "LANG_ONE_PIC_SHOW_HINT",
+                value
+            );
+        } else {
+            const convText = `That is incorrect! Try again.`;
+            langSetCanvas(
+                conv,
+                convText,
+                "LANG_ONE_PIC_UPDATE_ATTEMPTS",
+                attempts
+            );
+        }
     }
 });
 
@@ -633,7 +772,6 @@ app.handle("lang_multiple_words_answer_translation", (conv) => {
 
     const userAnswer = String(word);
     const userID = conv.user.params.uid;
-    const englishAnswer = conv.session.params.onePicAnswer;
 
     const spanishAnswers = Array.from(
         conv.session.params.multipleWordsAnswerTranslated
@@ -662,8 +800,52 @@ app.handle("lang_multiple_words_answer_translation", (conv) => {
             spanishAnswers[wordIndex]
         );
     } else {
-        conv.add(`That is incorrect! Try again.`);
-        conv.add(new Canvas());
+        conv.session.params.multipleWordsAttemptsLeft--;
+        const attempts = conv.session.params.multipleWordsAttemptsLeft;
+
+        if (attempts == 0) {
+            const convText = `You have ran out of attempts. The correct answers are shown below.`;
+            const value = {
+                english: conv.session.params.multipleWordsAnswer,
+                spanish: conv.session.params.multipleWordsAnswerTranslated,
+            };
+            langSetCanvas(
+                conv,
+                convText,
+                "LANG_MULTIPLE_WORDS_SHOW_ANSWER",
+                value
+            );
+        } else if (attempts % 2 == 0) {
+            conv.session.params.spanishWordsGuessed++;
+            const hints = conv.session.params.multipleWordsHints;
+
+            var randomIndex = Math.floor(Math.random() * 3);
+            while(hints.includes(randomIndex)) {
+                randomIndex = Math.floor(Math.random() * 3);
+            }
+            conv.session.params.multipleWordsHints.push(randomIndex);
+
+            var convText = ""
+            if (conv.session.params.multipleWordsHints.length == 3) {
+                convText = `You have ran out of spanish hints. The correct spanish words are shown below.`;
+            } else {
+                convText = `That is incorrect! You can try again but here's a hint.`;
+            }
+
+            const value = {
+                word: spanishAnswers[randomIndex],
+                index: randomIndex,
+            };
+            langSetCanvas(conv, convText, "LANG_MULTIPLE_WORDS_SHOW_SPANISH", value);
+        } else {
+            const convText = `That is incorrect! Try again.`;
+            langSetCanvas(
+                conv,
+                convText,
+                "LANG_MULTIPLE_WORDS_UPDATE_ATTEMPTS",
+                attempts
+            );
+        }
     }
 });
 
@@ -704,6 +886,260 @@ app.handle("lang_change_game", (conv) => {
     }
 
     langSetCanvas(conv, "", "LANG_MENU", conv.scene.name);
+});
+
+/**
+ * Conversation Section
+ */
+
+const salutationsIndex = {
+    HOW_ARE_YOU: 0,
+    WHERE_ARE_YOU_FROM: 1,
+    CAREER: 2,
+    COUNTRIES_VISITED: 3,
+    NUM_OF_PEOPLE_LIVED_WITH: 4,
+    FAVORITE_FOOD: 5,
+    HOBBIES: 6,
+    SCHOOL_ATTENDED: 7,
+};
+
+const salutations = {
+    HOW_ARE_YOU: {
+        english: "How are you",
+        spanish: "Estoy",
+        example: "Estoy muy bien",
+    },
+    WHERE_ARE_YOU_FROM: {
+        english: "Where are you from",
+        spanish: "Soy de",
+        example: "Soy de Jamaica",
+    },
+    CAREER: {
+        english: "What do you want to be in the future",
+        spanish: "Quiero ser",
+        example: "Quiero ser mecanico",
+    },
+    COUNTRIES_VISITED: {
+        english: "Which countries have you visited",
+        spanish: "He estado en",
+        example: "He estado en estados unidos, canadá y mexico",
+    },
+    NUM_OF_PEOPLE_LIVED_WITH: {
+        english: "How many people do you live with",
+        spanish: "Vivo con",
+        example: "Vivo con cinco personas",
+    },
+    FAVORITE_FOOD: {
+        english: "What is your favorite food",
+        spanish: "Mi comida favorita",
+        example: "Mi comida favorita son los plátanos",
+    },
+    HOBBIES: {
+        english: "What are your hobbies",
+        spanish: "Mis pasatiempos son",
+        example: "Mis pasatiempos son jugar futbol y videojuegos",
+    },
+    SCHOOL_ATTENDED: {
+        english: "Which school do you attend",
+        spanish: "Asisto a",
+        example: "Asisto a Williams College",
+    },
+};
+
+/**
+ * Handler to welcome the user to the conversation section
+ */
+app.handle("lang_conversation_welcome", (conv) => {
+    let date = new Date();
+    var greeting;
+    if (date.getHours() < 12) {
+        greeting = `Buenos días`;
+    } else if (date.getHours() >= 12 && date.getHours() < 17) {
+        greeting = `Buenas tardes`;
+    } else {
+        greeting = `Buena noches`;
+    }
+
+    let message = `${greeting} ${conv.user.params.tokenPayload.given_name}, cómo estas.`;
+    const value = {
+        sender: true,
+        text: message,
+    };
+    conv.session.params.salutation = salutations.HOW_ARE_YOU;
+    conv.session.params.salutationsIndex = salutationsIndex.HOW_ARE_YOU;
+    langSetCanvas(conv, message, "LANG_START_CONVERSATION", value);
+});
+
+/**
+ * Handler to manage the responses by the user during the conversation
+ */
+app.handle("lang_conversation_response", (conv) => {
+    const word = conv.intent.params.lang_words
+        ? conv.intent.params.lang_words.resolved
+        : null;
+
+    const salutation = conv.session.params.salutationsIndex;
+    if (salutation == salutationsIndex.HOW_ARE_YOU) {
+        howAreYou(conv, word);
+    } else {
+        
+    }
+});
+
+const GOOD_WELCOME = ["estupendo", "muy bien", "así así"];
+const BAD_WELCOME = ["mal", "fatal", "exhausto"];
+function howAreYou(conv, word) {
+    var senderMessage;
+    if (GOOD_WELCOME.includes(word)) {
+        senderMessage = `Estoy feliz de escuchar eso. De dónde eres?`;
+    } else if (BAD_WELCOME.includes(word)) {
+        senderMessage = `Siento oír eso. De dónde eres?`;
+    } else {
+        senderMessage = `Vale, se dónde eres?`;
+    }
+    conv.session.params.salutation = salutations.WHERE_ARE_YOU_FROM;
+    conv.session.params.salutationsIndex = salutationsIndex.WHERE_ARE_YOU_FROM;
+    const value = {
+        senderMessage: senderMessage,
+        receiverMessage: conv.intent.query,
+        receiverImage: conv.user.params.tokenPayload.picture,
+    };
+    langSetCanvas(conv, senderMessage, "LANG_ADD_CONVERSATION_MESSAGE", value);
+}
+
+/**
+ * Handler to translate the word that the user requested
+ */
+app.handle("lang_conversation_translate", (conv) => {
+    const translationRequest = conv.intent.params.lang_words
+        ? conv.intent.params.lang_words.resolved
+        : null;
+
+    return translation
+        .translateFunction(translationRequest)
+        .then((translatedText) => {
+            const senderMessage = "The translation is: " + translatedText;
+            const value = {
+                senderMessage: senderMessage,
+                receiverMessage: conv.intent.query,
+                receiverImage: conv.user.params.tokenPayload.picture,
+            };
+            langSetCanvas(
+                conv,
+                senderMessage,
+                "LANG_ADD_CONVERSATION_MESSAGE",
+                value
+            );
+        })
+        .catch((error) => console.log(error));
+})
+
+/**
+ * Handler to search up the results that the user requested
+ */
+app.handle("lang_conversation_search", (conv) => {
+    const query = conv.intent.params.lang_words
+        ? conv.intent.params.lang_words.resolved
+        : null;
+
+    return search
+        .searchFunction(query)
+        .then((results) => {
+            var senderMessage =
+                "Here is a result of your searches. Please select a article number below to learn more about it.";
+            const value = {
+                senderMessage: senderMessage,
+                receiverMessage: conv.intent.query,
+                receiverImage: conv.user.params.tokenPayload.picture,
+                results: results,
+            };
+            conv.session.params.search_results = results;
+            langSetCanvas(
+                conv,
+                senderMessage,
+                "LANG_ADD_CONVERSATION_SEARCH_MESSAGE",
+                value
+            );
+        })
+        .catch((error) => console.log(error));
+});
+
+/**
+ * Handler to read the article number requested by the user
+ */
+app.handle("lang_conversation_article", (conv) => {
+    const articleNumber = conv.intent.params.article_number
+        ? conv.intent.params.article_number.resolved
+        : null;
+
+    var senderMessage = `Okay opening article ${articleNumber}`;
+    const results = conv.session.params.search_results;
+    const article = results[articleNumber - 1];
+    var words = article.description.split(".");
+    senderMessage += ". " + words[0];
+    conv.session.params.search_results_description = words[0];
+
+    const value = {
+        senderMessage: senderMessage,
+        receiverMessage: conv.intent.query,
+        receiverImage: conv.user.params.tokenPayload.picture,
+    };
+    langSetCanvas(conv, senderMessage, "LANG_ADD_CONVERSATION_MESSAGE", value);
+});
+
+/**
+ * Handler to translate the article number requested by the user
+ */
+app.handle("lang_conversation_article_translate", (conv) => {
+    const description = conv.session.params.search_results_description;
+    return translation
+        .translateFunction(conv.session.params.search_results_description)
+        .then((translatedText) => {
+            const senderMessage = "The translated text is: " + translatedText;
+            const value = {
+                senderMessage: senderMessage,
+                receiverMessage: conv.intent.query,
+                receiverImage: conv.user.params.tokenPayload.picture,
+            };
+            langSetCanvas(
+                conv,
+                senderMessage,
+                "LANG_ADD_CONVERSATION_MESSAGE",
+                value
+            );
+        })
+        .catch((error) => console.log(error));
+});
+
+/**
+ * Translate the current message shown to the user
+ */
+app.handle("lang_conversation_help", (conv) => {
+    const salutation = conv.session.params.salutation;
+    senderMessage = `This translation is ${salutation.english}. You typically start with ${salutation.spanish} followed by your answer. For example, ${salutation.example}`;
+    const value = {
+        senderMessage: senderMessage,
+        receiverMessage: conv.intent.query,
+        receiverImage: conv.user.params.tokenPayload.picture,
+    };
+    langSetCanvas(conv, senderMessage, "LANG_ADD_CONVERSATION_MESSAGE", value);
+});
+
+/**
+ * Starts the vocab section of the app
+ */
+app.handle("lang_start_vocab", (conv) => {
+    const userID = conv.user.params.uid;
+    const firestoreUser = admin.firestore().doc(`AOGUsers/${userID}`);
+    return firestoreUser.get().then((value) => {
+        const words = value.data()["TranslatedWords"];
+        langSetCanvas(
+            conv,
+            "Okay, fetching translated word",
+            "LANG_VOCAB",
+            words
+        );
+    });
 });
 
 app.handle("lang_instructions", (conv) => {

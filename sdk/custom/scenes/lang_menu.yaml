@@ -15,3 +15,7 @@ intentEvents:
           webhookHandler:
       intent: lang_start_multiple_words
       transitionToScene: lang_multiple_words
+    - handler:
+        webhookHandler: 
+      intent: lang_start_conversation
+      transitionToScene: lang_conversation

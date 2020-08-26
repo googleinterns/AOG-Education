@@ -18,6 +18,13 @@ handlers:
     - name: lang_one_pic_answer_translation
     - name: lang_multiple_words_answer_translation
     - name: lang_next_question
+    - name: lang_conversation_welcome
+    - name: lang_conversation_response
+    - name: lang_conversation_help
+    - name: lang_conversation_search
+    - name: lang_conversation_article
+    - name: lang_conversation_article_translate
+    - name: lang_conversation_translate
     - name: lang_change_game
     # Geography Section
     - name: geo_setup
