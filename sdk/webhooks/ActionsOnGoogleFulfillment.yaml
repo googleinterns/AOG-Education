@@ -27,6 +27,9 @@ handlers:
     - name: geo_country
     - name: geo_check_answer
     - name: geo_results
+    - name: geo_choose_city
+    - name: geo_city
+    - name: geo_move
     # Reading Section
     - name: read_fallback
     - name: read_bookSelected
@@ -34,7 +37,6 @@ handlers:
     - name: read_openLibrary
     - name: read_nextChunk
     - name: read_restartBook
-    - name: read_initialize
 
 httpsEndpoint:
     baseUrl: https://us-central1-step-capstone.cloudfunctions.net/ActionsOnGoogleFulfillment

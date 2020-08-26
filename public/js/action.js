@@ -37,6 +37,30 @@ export class Action {
       GEO_SHOW_RESULTS: (data) => {
         this.scene.geoShowResults(data);
       },
+      GEO_CHOOSE_CITY: (data) => {
+        this.scene.geoChooseCity(data);
+      },
+      GEO_CITY: (data) => {
+        this.scene.geoCity(data);
+      },
+      GEO_UP: (data) => {
+        this.scene.geoUp();
+      },
+      GEO_DOWN: (data) => {
+        this.scene.geoDown();
+      },
+      GEO_LEFT: (data) => {
+        this.scene.geoLeft();
+      },
+      GEO_RIGHT: (data) => {
+        this.scene.geoRight();
+      },
+      GEO_FORWARD: (data) => {
+        this.scene.geoForward();
+      },
+      GEO_BACKWARD: (data) => {
+        this.scene.geoBackward();
+      },
 
       // AOG Education Language Commands
       LANG_MENU: (data) => {
@@ -105,6 +129,14 @@ export class Action {
     this.commands.GEO_LOAD_COUNTRY_MAP.bind(this);
     this.commands.GEO_LOAD_STATE_MAP.bind(this);
     this.commands.GEO_SHOW_RESULTS.bind(this);
+    this.commands.GEO_CHOOSE_CITY.bind(this);
+    this.commands.GEO_CITY.bind(this);
+    this.commands.GEO_UP.bind(this);
+    this.commands.GEO_DOWN.bind(this);
+    this.commands.GEO_LEFT.bind(this);
+    this.commands.GEO_RIGHT.bind(this);
+    this.commands.GEO_FORWARD.bind(this);
+    this.commands.GEO_BACKWARD.bind(this);
 
     // AOG Education Language Commands
     this.commands.LANG_START_ONE_PIC.bind(this);

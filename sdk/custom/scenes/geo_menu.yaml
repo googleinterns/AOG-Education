@@ -10,3 +10,5 @@ intentEvents:
   transitionToScene: geo_state
 - intent: geo_country_cat
   transitionToScene: geo_country
+- intent: geo_visit
+  transitionToScene: geo_visit

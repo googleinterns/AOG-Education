@@ -51,7 +51,7 @@ function getQuestion(conv) {
     setQuestionBank(conv);
     let questions = getQuestionBank(conv);
     const ind = parseInt(Math.random() * questions.length);
-    conv.user.params.category[conv.session.params.geo_category][entries.ind] = ind;
+    conv.user.params.category[conv.session.params.geo_category][entries.index] = ind;
     conv.session.params.geo_name = questions[ind][0];
     conv.session.params.geo_capital = questions[ind][1];
 
@@ -91,6 +91,7 @@ function setup(conv) {
     conv.session.params.geo_num_questions_left = 2;
     conv.session.params.geo_correct = [];
     conv.session.params.geo_incorrect = [];
+    conv.session.params.geo_try = 0;
 }
 
 /**
