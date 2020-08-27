@@ -8,29 +8,58 @@ export class Library{
      */
 
     libraryContainer = document.createElement("div"); //aka bookshelf
+    books = document.createElement("div");
+    shelf = document.createElement("div");
+    bookObjects= [];
 
     constructor() {
-        this.libraryContainer.classList.add("flex-center");
+        let left = document.createElement("div");
+        let right = document.createElement("div");
+        let reflect = document.createElement("div");
+
+        this.shelf.classList.add("shelf");
+        left.classList.add("bookend_left");
+        right.classList.add("bookend_right");
+        reflect.classList.add("reflection");
+
+        this.shelf.appendChild(left);
+        this.shelf.appendChild(right);
+        this.shelf.appendChild(reflect);
+
         this.libraryContainer.setAttribute("id", "libraryContainer");
+        this.libraryContainer.appendChild(this.shelf);
     }
 
-    //consider using a queue
     addToLibrary(books){ 
-        let bookshelf = document.createElement("div");
-        bookshelf.classList.add("bookshelf");
+        this.books.classList.add("books");
         for(let i = 0; i < books.length; i++)
         {
             let gw = new Book(books[i]["title"], books[i]["imgSrc"]);
-            bookshelf.appendChild(gw.getBook());
+            gw.setProgress(Math.round(books[i]["chunkNumber"] * 100)); 
+            this.bookObjects.push(gw);
+            this.books.appendChild(gw.getBook());
         }
         
-        this.libraryContainer.appendChild(bookshelf);
+        this.libraryContainer.prepend(this.books);
     }
 
     clearLibrary(){
-        //removes the bookshelf container
-        if(this.libraryContainer.lastChild){
-            this.libraryContainer.removeChild(this.libraryContainer.lastChild);
+        //removes the bookshelf container, assume only one
+        if(this.libraryContainer.firstChild){
+            this.libraryContainer.removeChild(this.libraryContainer.firstChild);
+        }
+    }
+
+    updateProgress(progress){
+        while (this.books.firstChild) {
+            this.books.removeChild(this.books.lastChild);
+        }
+
+        for(let i = 0; i < this.bookObjects.length; i++)
+        {
+            this.bookObjects[i].removeAnimation();
+            this.bookObjects[i].setProgress(Math.round(progress[i] * 100)); //updates each book's current progress level
+            this.books.appendChild(this.bookObjects[i].getBook());
         }
     }
 
@@ -38,11 +67,4 @@ export class Library{
         return this.libraryContainer;
     }
 
-    hideLibrary(){
-        this.libraryContainer.setAttribute("style","display:none");
-    }
-
-    showLibrary(){
-        this.libraryContainer.setAttribute("style", "display:flex");
-    }
 }

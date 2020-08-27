@@ -3,19 +3,54 @@
  */
 export class Text {
 
-  textContainer = document.createElement("div");
-  text = document.createElement("p");
+  textContainer;
+  text;
   interval;
   index;
   ranges;
   words;
   instance;
+  pageFlip;
+  
 
   constructor() {
-    this.text.classList.add("text");
+    this.textContainer = document.createElement("div");
     this.textContainer.classList.add("text-container");
-    this.textContainer.appendChild(this.text);
-    this.instance = new Mark(this.textContainer);
+    this.textContainer.id = "book";
+    let page1 = document.createElement("div");
+    page1.classList.add("my-page");
+    let page2 = document.createElement("div");
+    page2.classList.add("my-page");
+
+    let container = document.createElement("div");
+    container.classList.add("contain");
+
+    this.text = document.createElement("p");
+    this.text.id = "special";
+    this.text.classList.add("text"); //here
+
+    container.appendChild(this.text);
+    page2.appendChild(container);
+    this.textContainer.appendChild(page1);
+    this.textContainer.appendChild(page2);
+
+    this.instance = new Mark(this.text); //init Mark.js
+  }
+
+  //init page-flip.js
+  loadPageFlipper(){
+    this.pageFlip = new St.PageFlip(this.textContainer, { 
+      width: 1200, //dimensions of the nest hub max display resolution
+      height: 800,
+      startPage: 1,
+      useMouseEvents: false
+    });
+    this.pageFlip.loadFromHTML(document.querySelectorAll(".my-page"));
+  }
+
+  flip() {
+    this.pageFlip.turnToPrevPage();
+    this.pageFlip.flipNext({ corner: "top" });
   }
 
   setText(newText) {
@@ -60,15 +95,19 @@ export class Text {
       this.instance.unmark();
   }
 
+  titleFont(){
+    this.text.classList.remove("text");
+    this.text.classList.add("title");
+  }
+
+  textFont(){
+    this.text.classList.remove("title");
+    this.text.classList.add("text");
+  }
+
   getText() {
     return this.textContainer;
   }
 
-  hideText() {
-    this.textContainer.style.display = "none";
-  }
-
-  showText() {
-    this.textContainer.style.display = "block";
-  }
 }
+

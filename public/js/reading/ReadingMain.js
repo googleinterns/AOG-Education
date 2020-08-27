@@ -13,18 +13,17 @@ export class ReadingMain{
   constructor() {
     this.view.setAttribute("id", "reading");
     this.view.appendChild(this.library.getLibrary());
-    this.view.appendChild(this.text.getText());
-    this.openLibrary();
   }
 
   openText(){
-    this.text.showText();
-    this.library.hideLibrary();
+    this.view.removeChild(this.library.getLibrary());
+    this.view.appendChild(this.text.getText());
+    this.text.loadPageFlipper(); //do it here so that the dom is properly updated first
   }
 
   openLibrary(){
-    this.text.hideText();
-    this.library.showLibrary();
+    this.view.removeChild(this.text.getText());
+    this.view.appendChild(this.library.getLibrary());
   }
 
   getLibrary(){

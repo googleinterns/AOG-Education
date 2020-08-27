@@ -1,69 +1,151 @@
 /*Library Class Styling below*/
 #libraryContainer {
-    height: 100%;
-    border: 3px solid black;
-    justify-content: space-evenly;
-    align-items: center;
-  }
-  
-#reading {
-  height: 80%;
-  width: 100%;
-  background-color: cornsilk;
+  height: 100%;
 }
 
-  .bookshelf {
-    width: 90vw;
-    border: 2px solid blueviolet;
-    flex-direction: row;
-    display: flex;
-    justify-content: space-around;
-    height: 65%;
-  }
-  
-  /*Book Class Styling below*/
-  .book {
-    width: 35%;
-    justify-content: flex-start;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 2vw 0;
-  }
-  
-  .book p {
-    font-size: 30px;
-    text-decoration: underline;
-  }
-  
-  .book img {
-    height: auto;
-    width: 100%;
-  }
-  
-  /* Text Class Styling Below*/
-  .text-container {
-    height: 80vh;
-    margin-top: -55vh;
-    padding: 0 10vw;
-    font-size: 40px;
-    text-align: center;
-    position: relative;
-    font-family: sans-serif;
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-  }
-  
-  .text {
-    height: 50%;
-    margin-top: 50%;
-  }
-  
-  .red-highlight {
-    color: red;
-  }
-  
-  mark{
-    background: #0C374D;
-    color: white;
-  }
+.books {
+  /*margin-top: 5%;*/
+  margin-bottom: .78%;
+  box-shadow: inset;
+  flex-direction: row;
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 30px;
+  padding-top: 10px;
+}
+
+.books {
+  -moz-perspective: 100px;
+  -moz-transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+/*Book Class Styling below*/
+
+.book {
+  border: 2px inset brown;
+  width: 29%;
+  justify-content: space-around;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2% 2.4%;
+  flex-shrink: 0;
+  background-color: aqua;
+  box-shadow: 5px 5px 20px #333;
+}
+
+.book:first-child{
+  margin-left: 0;
+}
+
+.book img {
+  vertical-align: middle; 
+  height: 100%;
+  width: 100%;
+  position: relative;
+  max-width: 100%;
+}
+
+.book:after {
+  width: 5%;
+  left: 100%;
+  background-color: #EFEFEF;
+  box-shadow: inset 0px 0px 5px #aaa;
+  -moz-transform: rotateY(20deg);
+  -webkit-transform: perspective(100) rotateY(20deg);
+}
+
+.book:before {
+  width: 100%;
+  left: 7.5%;
+  background-color: #5a2d18;
+  box-shadow: 5px 5px 20px #333;
+}
+
+.book:before,
+.book:after {
+  position: absolute;
+  top: 2%;
+  height: 96%;
+  content: ' ';
+  z-index: -1;
+}
+
+
+.book {
+  position: relative;
+  -moz-perspective: 100px;
+  -moz-transform: rotateY(-3deg);
+  -webkit-transform: perspective(100) rotateY(-3deg);
+  outline: 1px solid transparent; 
+  box-shadow: none;
+}
+
+/* Text Class Styling Below*/
+.text-container {
+  max-height: 85vh;
+  margin-top: -5%;
+  padding-left: 5%;
+  position: relative;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+} 
+
+.contain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 90%;
+  text-align: center;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.text {
+  font-family: minion-pro, serif;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 60px;
+  font-size: 42pt;
+}
+
+.title {
+  font-family: minion-pro-display, serif;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 78px;
+  font-size: 64pt;
+}
+
+.red-highlight {
+  color: red;
+}
+
+.myProgress {
+  width: 100%;
+  background-color: grey;
+}
+
+.myBar {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+  background-color: limegreen;
+  color: white;
+}
+
+#reading::-webkit-scrollbar {
+  display: none;
+}
+
+#reading {
+  position: relative;
+  flex: 1;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
