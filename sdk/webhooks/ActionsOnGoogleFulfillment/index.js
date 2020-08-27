@@ -1155,17 +1155,18 @@ app.handle("read_bookSelected", (conv) => {
   conv.user.params.currentBook = bookTitle;
 
   let text = getText(conv);
-  conv.add("Loading Book...");
+  checkForchapter(conv, text);
   conv.add(
     new Canvas({
       data: {
         command: "READ_BOOK_SELECTED",
         text: text,
+        chap: chap,
       },
     })
   );
 
-  checkForchapter(conv, text);
+  
 });
 
 app.handle("read_analyseUserInput", (conv) => {

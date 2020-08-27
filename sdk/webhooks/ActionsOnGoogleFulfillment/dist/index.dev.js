@@ -1194,14 +1194,14 @@ app.handle("read_bookSelected", function (conv) {
 
   conv.user.params.currentBook = bookTitle;
   var text = getText(conv);
-  conv.add("Loading Book...");
+  checkForchapter(conv, text);
   conv.add(new Canvas({
     data: {
       command: "READ_BOOK_SELECTED",
-      text: text
+      text: text,
+      chap: chap
     }
   }));
-  checkForchapter(conv, text);
 });
 app.handle("read_analyseUserInput", function (conv) {
   var bookTitle = conv.user.params.currentBook;
