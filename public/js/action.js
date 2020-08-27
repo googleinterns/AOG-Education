@@ -116,23 +116,26 @@ export class Action {
             ///////////////////////////////////////////
 
             READ_WRITE_TO_LIBRARY: (data) => {
-                this.scene.openReading();
-                this.scene.reading.getLibrary().clearLibrary();
-                this.scene.reading.getLibrary().addToLibrary(data.books);
+              this.scene.reading.getLibrary().clearLibrary();
+              this.scene.reading.getLibrary().addToLibrary(data.books);
+              this.scene.openReading();
             },
             READ_BOOK_SELECTED: (data) => {
-                this.scene.reading.getText().setText(data.text);
-                this.scene.reading.openText();
+              this.scene.reading.getText().setText(data.text);
+              this.scene.reading.openText();
             },
             READ_CHANGE_TEXT: (data) => {
-                this.scene.reading.getText().setText(data.text);
+              this.scene.reading.getText().flip();
+              this.scene.reading.getText().textFont(); //moved here to resolve async bug with TTS handlers
+              this.scene.reading.getText().setText(data.text);
             },
             READ_OPEN_LIBRARY: (data) => {
-                this.scene.reading.openLibrary();
+              this.scene.reading.getLibrary().updateProgress(data.progress);
+              this.scene.reading.openLibrary();
             },
             READ_TEXT_FEEDBACK: (data) => {
-                this.scene.reading.getText().setRanges(data.ranges);
-                this.scene.reading.getText().setWords(data.words);
+              this.scene.reading.getText().setRanges(data.ranges);
+              this.scene.reading.getText().setWords(data.words);
             },
         };
         this.commands.AOG_MAIN_MENU_SELECTION.bind(this);
@@ -196,15 +199,20 @@ export class Action {
 
             //Synchronize Assistant dialogue with text highlighting and page transition
             onTtsMark: async (markName) => {
-                if (markName === "FIN") {
-                    this.scene.reading.getText().clearHighlights();
-                    await this.canvas.sendTextQuery("Go next"); //move to next page once assistant is done reading
-                }
-                if (markName === "OK") {
-                    //begining of assistants speech
-                    this.scene.reading.getText().startHighlighting();
-                }
-            },
+              if (markName === "FIN") {
+                this.scene.reading.getText().clearHighlights();
+                await this.canvas.sendTextQuery("Go next"); //move to next page once assistant is done reading
+              }
+              if (markName ==='OK') { //begining of assistants speech
+                this.scene.reading.getText().startHighlighting();
+              }
+              if (markName === 'CHAP') {
+                this.scene.reading.getText().titleFont();
+              }
+              if (markName === 'ENDCHAP') {
+                await this.canvas.sendTextQuery("Go next");
+              }
+            }
         };
         callbacks.onUpdate.bind(this);
         // called by the Interactive Canvas web app once web app has loaded to

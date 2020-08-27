@@ -13,17 +13,21 @@ import { Vocabulary } from "./language/vocab.js";
 
 export class Scene {
     menu = new AogMainMenu();
+
     geography = new GeographyMain();
     geography_city = new GeographyCity();
     geography_map = new GeographyMap();
     geography_question = new GeographyQuestion();
     geography_results = new GeographyResults();
+
     language = new LanguageMain();
     onePicOneWord = new OnePicOneWord();
     onePicMultipleWords = new OnePicMultipleWords();
     conversation = new Conversation();
     vocabulary = new Vocabulary();
+
     reading = new ReadingMain();
+
     game = document.getElementById("game");
 
     constructor() {
@@ -32,12 +36,15 @@ export class Scene {
     }
 
     aogOpenMainMenu() {
-        this.game.innerHTML = "";
+        while(this.game.firstChild){
+            this.game.removeChild(this.game.lastChild);
+        }
         this.game.appendChild(this.menu.getMenu());
+        this.createAnimation();
     }
 
     openGeography() {
-        document.getElementById("animation-canvas").style.visibility = "hidden";
+        this.game.removeChild(document.getElementById("animation-canvas"));
         this.game.removeChild(this.menu.getMenu());
         this.game.appendChild(this.geography.getElement());
     }
@@ -49,9 +56,7 @@ export class Scene {
     }
 
     openReading() {
-        document.getElementById("animation-canvas").style.visibility = "hidden";
-        this.game.style.display = "flex";
-        this.game.style.alignItems = "center";
+        this.game.removeChild(document.getElementById("animation-canvas"));
         this.game.removeChild(this.menu.getMenu());
         this.game.appendChild(this.reading.getReadingElement());
     }
