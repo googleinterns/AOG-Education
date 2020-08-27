@@ -1161,7 +1161,6 @@ app.handle("read_bookSelected", (conv) => {
       data: {
         command: "READ_BOOK_SELECTED",
         text: text,
-        chap: chap,
       },
     })
   );
