@@ -29,7 +29,7 @@ export class GeographyQuestion {
     createCard(side) {
         // Create card.
 		let card = document.createElement("div");
-        card.classList.add("geo", "h-100", "card", "bg-light", "border-primary", side, "rounded");
+        card.classList.add("geo", "h-100", "card", "bg-light", side, "rounded");
         this.cardInner.appendChild(card);
 
         // Create card body.
