@@ -34,6 +34,7 @@ export class GeographyResults {
      * @param {*} list of answers in that category
      */
     getListContainer(resultsContainer, category, categoryClass, list) {
+        if (list.length == 0) return;
         let div = document.createElement("div");
         div.classList.add("col");
         resultsContainer.appendChild(div);
